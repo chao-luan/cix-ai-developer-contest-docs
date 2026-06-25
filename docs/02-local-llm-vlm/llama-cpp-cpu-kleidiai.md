@@ -54,31 +54,87 @@ ls build/bin
 llama-cli
 ```
 
-## 6. 准备模型
+## 6. 准备验证模型
 
-llama.cpp 通常使用 GGUF 模型文件。
+llama.cpp 通常使用 GGUF 模型文件。建议优先使用小模型验证基础运行路径，避免模型过大导致下载慢、加载慢或内存不足。
 
-建议先使用小模型进行验证，例如：
+本文档推荐使用 `Qwen2.5-0.5B-Instruct-GGUF` 作为基础验证模型。
 
-```text
-Qwen2.5-0.5B-Instruct-Q4_0.gguf
-Qwen2.5-1.5B-Instruct-Q4_0.gguf
-TinyLlama Q4 GGUF
+模型仓库：
+
+| 平台           | 链接                                                                                              |
+| ------------ | ----------------------------------------------------------------------------------------------- |
+| Hugging Face | [Qwen/Qwen2.5-0.5B-Instruct-GGUF](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF)       |
+| ModelScope   | [qwen/Qwen2.5-0.5B-Instruct-GGUF](https://modelscope.cn/models/qwen/Qwen2.5-0.5B-Instruct-GGUF) |
+
+```{note} id="s4dt6z"
+模型文件不建议提交到 GitHub 仓库。请将模型下载到开发板本地目录，例如 `~/models/`。
 ```
 
-模型文件不建议提交到 GitHub 仓库。可放在开发板本地目录，例如：
+### 6.1 方式一：使用 llama.cpp 自动拉取模型
+
+如果网络可以访问 Hugging Face，可以直接使用 llama.cpp 的 `-hf` 参数拉取并运行模型：
 
 ```bash
-mkdir -p ~/models
+./build/bin/llama-cli \
+  -hf Qwen/Qwen2.5-0.5B-Instruct-GGUF:Q4_K_M \
+  -p "请用一句话介绍你自己。" \
+  -t 8 \
+  -n 128
+```
+
+该方式最简单，适合快速验证 llama.cpp 是否可以正常运行。
+
+### 6.2 方式二：手动下载模型文件
+
+也可以手动下载 GGUF 文件到本地目录：
+
+```bash
+mkdir -p ~/models/qwen2.5-0.5b
+cd ~/models/qwen2.5-0.5b
+```
+
+使用 Hugging Face CLI 下载：
+
+```bash
+pip3 install -U huggingface_hub
+
+huggingface-cli download \
+  Qwen/Qwen2.5-0.5B-Instruct-GGUF \
+  qwen2.5-0.5b-instruct-q4_k_m.gguf \
+  --local-dir . \
+  --local-dir-use-symlinks False
+```
+
+如果 Hugging Face 访问较慢，可打开 ModelScope 页面下载对应 GGUF 文件：
+
+```text
+https://modelscope.cn/models/qwen/Qwen2.5-0.5B-Instruct-GGUF
+```
+
+下载完成后，确认模型文件存在：
+
+```bash
+ls -lh ~/models/qwen2.5-0.5b/
 ```
 
 ## 7. 运行模型
 
-示例命令：
+如果使用 `-hf` 自动拉取模型，执行：
 
 ```bash
 ./build/bin/llama-cli \
-  -m ~/models/<your-model>.gguf \
+  -hf Qwen/Qwen2.5-0.5B-Instruct-GGUF:Q4_K_M \
+  -p "请用一句话介绍你自己。" \
+  -t 8 \
+  -n 128
+```
+
+如果使用本地 GGUF 文件，执行：
+
+```bash
+./build/bin/llama-cli \
+  -m ~/models/qwen2.5-0.5b/qwen2.5-0.5b-instruct-q4_k_m.gguf \
   -p "请用一句话介绍你自己。" \
   -t 8 \
   -n 128
@@ -86,12 +142,13 @@ mkdir -p ~/models
 
 参数说明：
 
-| 参数   | 说明           |
-| ---- | ------------ |
-| `-m` | 模型路径         |
-| `-p` | 输入 prompt    |
-| `-t` | CPU 线程数      |
-| `-n` | 最大生成 token 数 |
+| 参数    | 说明                          |
+| ----- | --------------------------- |
+| `-hf` | 从 Hugging Face 仓库自动拉取指定量化模型 |
+| `-m`  | 本地 GGUF 模型路径                |
+| `-p`  | 输入 prompt                   |
+| `-t`  | CPU 线程数                     |
+| `-n`  | 最大生成 token 数                |
 
 ## 8. 验证结果
 
