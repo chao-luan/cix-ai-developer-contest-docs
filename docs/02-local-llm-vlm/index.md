@@ -15,10 +15,10 @@
 
 ## Runtime Matrix
 
-| 框架        | CPU 后端         | GPU 后端 | 主要用途                        | 当前状态 |
-| --------- | -------------- | ------ | --------------------------- | ---- |
-| llama.cpp | CPU / KleidiAI | Vulkan | 本地 LLM / VLM 推理，常用于 GGUF 模型 | 待验证  |
-| MNN       | CPU / Arm 优化路径 | OpenCL | 本地多模态推理、端侧 AI 应用            | 待验证  |
+| 框架        | CPU 后端         | GPU 后端 | 主要用途                        |
+| --------- | -------------- | ------ | --------------------------- |
+| llama.cpp | CPU / KleidiAI | Vulkan | 本地 LLM / VLM 推理，常用于 GGUF 模型 |
+| MNN       | CPU / Arm 优化路径 | OpenCL | 本地多模态推理、端侧 AI 应用            |
 
 ## Reference Learning Paths
 
