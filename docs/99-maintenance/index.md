@@ -11,3 +11,4 @@ reflash-os-image
 update-bios
 recover-system
 known-boot-issues
+```
