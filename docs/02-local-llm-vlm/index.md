@@ -13,19 +13,12 @@
 本章节关注本地模型推理。NPU SDK、NOE SDK 和 AI ModelHub 相关内容请参考 NPU SDK 章节；云端大模型接入请参考 CDC Cloud LLM Access 章节。
 ```
 
-## Runtime Matrix
+## Runtime Matrix and Reference
 
-| 框架        | CPU 后端         | GPU 后端 | 主要用途                        |
-| --------- | -------------- | ------ | --------------------------- |
-| llama.cpp | CPU / KleidiAI | Vulkan | 本地 LLM / VLM 推理，常用于 GGUF 模型 |
-| MNN       | CPU / Arm 优化路径 | OpenCL | 本地多模态推理、端侧 AI 应用            |
-
-## Reference Learning Paths
-
-| 参考资料                                                                                                                                       | 说明                             |
-| ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------ |
-| [Run ERNIE-4.5 Mixture of Experts model on Armv9 with llama.cpp](https://learn.arm.com/learning-paths/cross-platform/ernie_moe_v9/)        | Arm 官方 llama.cpp on Armv9 参考教程 |
-| [Build a Multimodal Retail Restocking Assistant on Armv9 With MNN](https://learn.arm.com/learning-paths/cross-platform/multimodel_mnn_v9/) | Arm 官方 MNN 多模态 on Armv9 参考教程   |
+| 框架        | CPU 后端         | GPU 后端 | 主要用途                        | 参考资料                                                                                                                 |
+| --------- | -------------- | ------ | --------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| llama.cpp | CPU / KleidiAI | Vulkan | 本地 LLM / VLM 推理，常用于 GGUF 模型 | [Arm Learning Path: llama.cpp on Armv9](https://learn.arm.com/learning-paths/cross-platform/ernie_moe_v9/)           |
+| MNN       | CPU / Arm 优化路径 | OpenCL | 本地多模态推理、端侧 AI 应用            | [Arm Learning Path: MNN Multimodal on Armv9](https://learn.arm.com/learning-paths/cross-platform/multimodel_mnn_v9/) |
 
 ```{warning}
 Arm 官方 Learning Path 是上游参考教程。开发者大赛实际使用的模型文件、编译参数、运行命令、SDK 版本和硬件平台，应以本项目文档及维护人员提供的信息为准。
