@@ -128,45 +128,24 @@ cd ~/local-llm-test/llama.cpp
 
 ## 8. 验证结果
 
-如果终端可以正常输出模型回复，说明 llama.cpp CPU 路径已跑通。
+如果终端可以正常加载模型并输出回复，说明 llama.cpp CPU 路径已跑通。
 
-可以观察以下信息：
+运行成功后，终端会显示 `llama.cpp` 启动信息、模型路径、模型回复以及推理速度统计。
 
-```bash
-uname -a
-cat /etc/os-release
-lscpu
-free -h
+```{figure} ../_static/images/llama-cpp-cpu-qwen2.5-0.5b-result.jpg
+:alt: llama.cpp CPU Qwen2.5 0.5B result
+:width: 100%
+
+llama.cpp CPU 路径运行 Qwen2.5-0.5B-Instruct-GGUF Q4_K_M 验证结果
 ```
-
-并记录模型运行输出中的：
-
-* 模型名称。
-* 量化格式。
-* CPU 线程数。
-* 加载耗时。
-* 首 token 延迟。
-* tokens/s。
-* 内存占用。
-
-## 9. 当前验证状态
-
-| 项目             | 状态  | 备注                                                             |
-| -------------- | --- | -------------------------------------------------------------- |
-| llama.cpp 源码拉取 | 已验证 | `git clone https://github.com/ggml-org/llama.cpp.git`          |
-| CPU 编译         | 已验证 | `cmake -B build && cmake --build build -j$(nproc)`             |
-| GGUF 模型下载      | 已验证 | 使用 ModelScope 下载 `Qwen2.5-0.5B-Instruct-GGUF Q4_K_M`           |
-| GGUF 模型加载      | 已验证 | 本地路径 `~/models/qwen2.5-0.5b/qwen2.5-0.5b-instruct-q4_k_m.gguf` |
-| 文本生成           | 已验证 | 可正常生成中文回复                                                      |
-| 性能数据记录         | 已补充 | Prompt 约 92.0–93.4 t/s，Generation 约 38.4–38.5 t/s              |
 
 ```{note}
 以上性能数据为当前测试环境下的参考结果，实际结果会受开发板型号、系统版本、llama.cpp commit、模型量化格式、线程数和运行负载影响。
 ```
 
-## 10. 常见问题
+## 9. 常见问题
 
-### 10.1 编译失败
+### 9.1 编译失败
 
 检查：
 
@@ -175,7 +154,7 @@ free -h
 * 磁盘空间是否充足。
 * 当前 llama.cpp 分支是否支持目标平台。
 
-### 10.2 模型下载失败
+### 9.2 模型下载失败
 
 如果 Hugging Face 无法访问，建议优先使用 ModelScope 下载模型。
 
@@ -192,7 +171,7 @@ free -h
 scp qwen2.5-0.5b-instruct-q4_k_m.gguf cix@<BOARD_IP>:/home/cix/models/qwen2.5-0.5b/
 ```
 
-### 10.3 模型加载失败
+### 9.3 模型加载失败
 
 检查：
 
@@ -207,7 +186,7 @@ scp qwen2.5-0.5b-instruct-q4_k_m.gguf cix@<BOARD_IP>:/home/cix/models/qwen2.5-0.
 ls -lh ~/models/qwen2.5-0.5b/
 ```
 
-### 10.4 `-hf` 自动拉取模型失败
+### 9.4 `-hf` 自动拉取模型失败
 
 llama.cpp 支持通过 `-hf` 参数从 Hugging Face 自动拉取模型，但该方式依赖两个条件：
 
@@ -224,7 +203,7 @@ Connection timed out
 
 建议不要继续使用 `-hf`，改用本文档中的 ModelScope 手动下载方式，然后通过 `-m` 指定本地 GGUF 模型路径运行。
 
-### 10.5 `pip install huggingface_hub` 失败
+### 9.5 `pip install huggingface_hub` 失败
 
 在 Debian 12 / Bookworm 等系统中，直接使用 `pip install` 安装 Python 包可能出现：
 
@@ -234,7 +213,7 @@ error: externally-managed-environment
 
 这是系统 Python 环境保护机制导致的。本文档不依赖 `huggingface-cli`，无需安装 `huggingface_hub`。建议直接使用 `wget` 从 ModelScope 下载模型。
 
-## 11. 参考资料
+## 10. 参考资料
 
 * [Arm Learning Path: llama.cpp on Armv9](https://learn.arm.com/learning-paths/cross-platform/ernie_moe_v9/)
 * [llama.cpp GitHub Repository](https://github.com/ggml-org/llama.cpp)
