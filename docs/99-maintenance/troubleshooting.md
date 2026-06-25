@@ -470,3 +470,19 @@ nmcli device status
 rfkill list
 journalctl -xe
 ```
+
+## 14. 参考官方文档
+
+如果问题涉及硬件规格、接口连接、供电要求、扩展接口或外设兼容性，可参考对应平台官方文档：
+
+| 硬件平台             | 官方资料                                                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Radxa Orion O6   | [Radxa Orion O6](https://radxa.com/products/orion/o6/)                                                                   |
+| Radxa Orion O6N  | [Radxa Orion O6N](https://radxa.com/products/orion/o6n/)                                                                 |
+| Orange Pi 6 Plus | [Orange Pi 6 Plus 参数页](http://www.orangepi.cn/html/hardWare/computerAndMicrocontrollers/parameter/Orange-Pi-6-Plus.html) |
+| Minisforum MS-R1 | [MS-R1 Docs](https://github.com/minisforum-docs/MS-R1-Docs)                                                              |
+
+```{warning}
+官方硬件文档主要用于查询硬件规格和接口信息。BIOS 固件、OS 镜像、SDK 版本和开发者大赛 Release 基线，应以本项目文档及维护人员提供的信息为准。
+```
+
