@@ -362,7 +362,7 @@ vulkaninfo --summary
 
 本次验证中，Vulkan 后端已成功编译，`GGML_VULKAN` 为 `ON`，并使用本地 `Qwen2.5-0.5B-Instruct-GGUF Q4_K_M` 模型完成文本生成。
 
-![llama.cpp GPU Vulkan Qwen2.5 0.5B result](../_static/images/llama-cpp-gpu-qwen2.5-0.5b-result.jpg)
+![llama.cpp GPU Vulkan Qwen2.5 0.5B result](../_static/images/llama-cpp-gpu-qwen2.5-0.5b-result.png)
 
 本次验证结果如下：
 
