@@ -132,12 +132,21 @@ cd ~/local-llm-test/llama.cpp
 
 运行成功后，终端会显示 `llama.cpp` 启动信息、模型路径、模型回复以及推理速度统计。
 
-```{figure} ../_static/images/llama-cpp-cpu-qwen2.5-0.5b-result.jpg
-:alt: llama.cpp CPU Qwen2.5 0.5B result
-:width: 100%
+![llama.cpp CPU Qwen2.5 0.5B result](../_static/images/llama-cpp-cpu-qwen2.5-0.5b-result.jpg)
 
-llama.cpp CPU 路径运行 Qwen2.5-0.5B-Instruct-GGUF Q4_K_M 验证结果
-```
+本次验证使用 `Qwen2.5-0.5B-Instruct-GGUF Q4_K_M` 模型，通过 ModelScope 下载到本地，并使用 `-m` 参数指定本地 GGUF 文件运行。
+
+本次验证中，模型可以正常加载并生成中文回复，终端输出的参考性能如下：
+
+| 项目            | 结果                                                        |
+| ------------- | --------------------------------------------------------- |
+| 验证模型          | `Qwen2.5-0.5B-Instruct-GGUF Q4_K_M`                       |
+| 模型路径          | `~/models/qwen2.5-0.5b/qwen2.5-0.5b-instruct-q4_k_m.gguf` |
+| CPU 线程数       | `-t 8`                                                    |
+| 最大生成 token 数  | `-n 128`                                                  |
+| 文本生成          | 成功                                                        |
+| Prompt 速度     | 约 95.9 t/s                                                |
+| Generation 速度 | 约 38.9 t/s                                                |
 
 ```{note}
 以上性能数据为当前测试环境下的参考结果，实际结果会受开发板型号、系统版本、llama.cpp commit、模型量化格式、线程数和运行负载影响。
