@@ -98,8 +98,6 @@ vulkaninfo: command not found
 
 ## 5. 获取 llama.cpp
 
-本文档写成独立流程，即使没有先完成 CPU 页面，也可以单独执行。
-
 ```bash
 mkdir -p ~/local-llm-test
 cd ~/local-llm-test
