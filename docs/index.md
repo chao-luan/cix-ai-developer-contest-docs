@@ -10,23 +10,30 @@
 
 00-overview/index
 01-quick-start/index
+```
 
+```{toctree}
 :maxdepth: 2
 :caption: 模型运行与 SDK
 
 02-local-llm-vlm/index
 03-npu-sdk/index
 04-multimedia-sdk/index
+```
 
+```{toctree}
 :maxdepth: 2
 :caption: 外部加速与云端接入
 
 05-external-accelerators/index
 06-cdc-cloud-llm/index
+```
 
+```{toctree}
 :maxdepth: 2
 :caption: 示例与问题排查
 
 07-examples/index
 08-faq/index
 99-maintenance/index
+```
