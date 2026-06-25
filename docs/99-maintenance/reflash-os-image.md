@@ -52,7 +52,7 @@ lsblk
 从 Release 发布地址下载系统镜像文件。
 
 ```bash
-wget <OS_IMAGE_URL>
+wget https://zj-artifacts.cixtech.com/repository/linux-release/cix_p1_K6.6_2025Q3_dev/2025Q4_RC3.5/cix-evb-acpi/2026030311-0006065/images/linux-fs.sdcard.zst
 ```
 
 示例镜像文件名：
@@ -64,6 +64,10 @@ linux-fs.sdcard.zst
 ## 5. 烧录镜像
 
 执行以下命令，将压缩镜像解压并写入 NVMe SSD：
+
+```{warning}
+请务必将命令中的 /dev/sdX 替换为第3步中确认的实际盘符（例如 /dev/sdb），选错盘符将导致对应硬盘数据永久丢失。
+```
 
 ```bash
 zstd -d linux-fs.sdcard.zst -c | sudo dd of=/dev/sdX bs=4M conv=fsync status=progress
