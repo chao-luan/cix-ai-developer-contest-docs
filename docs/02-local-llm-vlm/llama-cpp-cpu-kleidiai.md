@@ -22,7 +22,7 @@
 
 ```bash
 sudo apt update
-sudo apt install -y git cmake build-essential
+sudo apt install -y git cmake build-essential wget
 ```
 
 ## 4. 获取 llama.cpp
@@ -64,52 +64,23 @@ llama.cpp 通常使用 GGUF 模型文件。建议优先使用小模型验证基�
 
 | 平台           | 链接                                                                                              |
 | ------------ | ----------------------------------------------------------------------------------------------- |
+| ModelScope   | [Qwen/Qwen2.5-0.5B-Instruct-GGUF](https://modelscope.cn/models/Qwen/Qwen2.5-0.5B-Instruct-GGUF) |
 | Hugging Face | [Qwen/Qwen2.5-0.5B-Instruct-GGUF](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF)       |
-| ModelScope   | [qwen/Qwen2.5-0.5B-Instruct-GGUF](https://modelscope.cn/models/qwen/Qwen2.5-0.5B-Instruct-GGUF) |
 
-```{note} id="s4dt6z"
+```{note}
 模型文件不建议提交到 GitHub 仓库。请将模型下载到开发板本地目录，例如 `~/models/`。
 ```
 
-### 6.1 方式一：使用 llama.cpp 自动拉取模型
+### 6.1 从 ModelScope 下载 GGUF 模型
 
-如果网络可以访问 Hugging Face，可以直接使用 llama.cpp 的 `-hf` 参数拉取并运行模型：
-
-```bash
-./build/bin/llama-cli \
-  -hf Qwen/Qwen2.5-0.5B-Instruct-GGUF:Q4_K_M \
-  -p "请用一句话介绍你自己。" \
-  -t 8 \
-  -n 128
-```
-
-该方式最简单，适合快速验证 llama.cpp 是否可以正常运行。
-
-### 6.2 方式二：手动下载模型文件
-
-也可以手动下载 GGUF 文件到本地目录：
+在开发板上执行：
 
 ```bash
 mkdir -p ~/models/qwen2.5-0.5b
 cd ~/models/qwen2.5-0.5b
-```
 
-使用 Hugging Face CLI 下载：
-
-```bash
-pip3 install -U huggingface_hub
-
-huggingface-cli download \
-  Qwen/Qwen2.5-0.5B-Instruct-GGUF \
-  qwen2.5-0.5b-instruct-q4_k_m.gguf \
-  --local-dir . \
-  --local-dir-use-symlinks False
-```
-
-如果 Hugging Face 访问较慢，可打开 ModelScope 页面下载对应 GGUF 文件：
-
-```text
-https://modelscope.cn/models/qwen/Qwen2.5-0.5B-Instruct-GGUF
+wget -O qwen2.5-0.5b-instruct-q4_k_m.gguf \
+https://modelscope.cn/models/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/master/qwen2.5-0.5b-instruct-q4_k_m.gguf
 ```
 
 下载完成后，确认模型文件存在：
@@ -118,19 +89,25 @@ https://modelscope.cn/models/qwen/Qwen2.5-0.5B-Instruct-GGUF
 ls -lh ~/models/qwen2.5-0.5b/
 ```
 
-## 7. 运行模型
+正常情况下可以看到类似文件：
 
-如果使用 `-hf` 自动拉取模型，执行：
-
-```bash
-./build/bin/llama-cli \
-  -hf Qwen/Qwen2.5-0.5B-Instruct-GGUF:Q4_K_M \
-  -p "请用一句话介绍你自己。" \
-  -t 8 \
-  -n 128
+```text
+qwen2.5-0.5b-instruct-q4_k_m.gguf
 ```
 
-如果使用本地 GGUF 文件，执行：
+```{warning}
+如果文件大小明显异常，例如只有几 KB，说明模型没有完整下载。请删除该文件后重新下载。
+```
+
+## 7. 运行模型
+
+进入 llama.cpp 源码目录：
+
+```bash
+cd ~/local-llm-test/llama.cpp
+```
+
+使用本地 GGUF 文件运行：
 
 ```bash
 ./build/bin/llama-cli \
@@ -142,19 +119,18 @@ ls -lh ~/models/qwen2.5-0.5b/
 
 参数说明：
 
-| 参数    | 说明                          |
-| ----- | --------------------------- |
-| `-hf` | 从 Hugging Face 仓库自动拉取指定量化模型 |
-| `-m`  | 本地 GGUF 模型路径                |
-| `-p`  | 输入 prompt                   |
-| `-t`  | CPU 线程数                     |
-| `-n`  | 最大生成 token 数                |
+| 参数   | 说明           |
+| ---- | ------------ |
+| `-m` | 本地 GGUF 模型路径 |
+| `-p` | 输入 prompt    |
+| `-t` | CPU 线程数      |
+| `-n` | 最大生成 token 数 |
 
 ## 8. 验证结果
 
 如果终端可以正常输出模型回复，说明 llama.cpp CPU 路径已跑通。
 
-建议记录以下信息：
+可以观察以下信息：
 
 ```bash
 uname -a
@@ -175,13 +151,18 @@ free -h
 
 ## 9. 当前验证状态
 
-| 项目             | 状态  | 备注 |
-| -------------- | --- | -- |
-| llama.cpp 源码拉取 | 待验证 |    |
-| CPU 编译         | 待验证 |    |
-| GGUF 模型加载      | 待验证 |    |
-| 文本生成           | 待验证 |    |
-| 性能数据记录         | 待补充 |    |
+| 项目             | 状态  | 备注                                                             |
+| -------------- | --- | -------------------------------------------------------------- |
+| llama.cpp 源码拉取 | 已验证 | `git clone https://github.com/ggml-org/llama.cpp.git`          |
+| CPU 编译         | 已验证 | `cmake -B build && cmake --build build -j$(nproc)`             |
+| GGUF 模型下载      | 已验证 | 使用 ModelScope 下载 `Qwen2.5-0.5B-Instruct-GGUF Q4_K_M`           |
+| GGUF 模型加载      | 已验证 | 本地路径 `~/models/qwen2.5-0.5b/qwen2.5-0.5b-instruct-q4_k_m.gguf` |
+| 文本生成           | 已验证 | 可正常生成中文回复                                                      |
+| 性能数据记录         | 已补充 | Prompt 约 92.0–93.4 t/s，Generation 约 38.4–38.5 t/s              |
+
+```{note}
+以上性能数据为当前测试环境下的参考结果，实际结果会受开发板型号、系统版本、llama.cpp commit、模型量化格式、线程数和运行负载影响。
+```
 
 ## 10. 常见问题
 
@@ -194,7 +175,24 @@ free -h
 * 磁盘空间是否充足。
 * 当前 llama.cpp 分支是否支持目标平台。
 
-### 10.2 模型加载失败
+### 10.2 模型下载失败
+
+如果 Hugging Face 无法访问，建议优先使用 ModelScope 下载模型。
+
+如果 `wget` 卡住或超时，建议：
+
+* 检查开发板网络连接。
+* 更换网络环境。
+* 在电脑上下载模型后通过 `scp` 传输到开发板。
+* 使用公司内部模型源。
+
+通过电脑传输模型示例：
+
+```bash
+scp qwen2.5-0.5b-instruct-q4_k_m.gguf cix@<BOARD_IP>:/home/cix/models/qwen2.5-0.5b/
+```
+
+### 10.3 模型加载失败
 
 检查：
 
@@ -203,7 +201,41 @@ free -h
 * 模型格式是否为 GGUF。
 * 内存是否足够。
 
+检查模型文件：
+
+```bash
+ls -lh ~/models/qwen2.5-0.5b/
+```
+
+### 10.4 `-hf` 自动拉取模型失败
+
+llama.cpp 支持通过 `-hf` 参数从 Hugging Face 自动拉取模型，但该方式依赖两个条件：
+
+* 开发板可以稳定访问 Hugging Face。
+* llama.cpp 编译时启用了 HTTPS 下载支持。
+
+如果出现以下问题：
+
+```text
+HTTPS is not supported
+failed to download model from Hugging Face
+Connection timed out
+```
+
+建议不要继续使用 `-hf`，改用本文档中的 ModelScope 手动下载方式，然后通过 `-m` 指定本地 GGUF 模型路径运行。
+
+### 10.5 `pip install huggingface_hub` 失败
+
+在 Debian 12 / Bookworm 等系统中，直接使用 `pip install` 安装 Python 包可能出现：
+
+```text
+error: externally-managed-environment
+```
+
+这是系统 Python 环境保护机制导致的。本文档不依赖 `huggingface-cli`，无需安装 `huggingface_hub`。建议直接使用 `wget` 从 ModelScope 下载模型。
+
 ## 11. 参考资料
 
 * [Arm Learning Path: llama.cpp on Armv9](https://learn.arm.com/learning-paths/cross-platform/ernie_moe_v9/)
 * [llama.cpp GitHub Repository](https://github.com/ggml-org/llama.cpp)
+* [Qwen2.5-0.5B-Instruct-GGUF on ModelScope](https://modelscope.cn/models/Qwen/Qwen2.5-0.5B-Instruct-GGUF)
