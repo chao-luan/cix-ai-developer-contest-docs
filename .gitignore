@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Sphinx build
+_build/
+docs/_build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Large files / internal packages
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.rar
+*.img
+*.img.xz
+*.iso
+*.gguf
+*.onnx
+*.bin
+*.pt
+*.pth
+*.safetensors
+
+# Logs
+*.log
