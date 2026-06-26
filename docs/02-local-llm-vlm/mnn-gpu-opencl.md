@@ -1,16 +1,29 @@
 # MNN GPU / OpenCL
 
-本文档介绍如何在开发板上验证 MNN OpenCL 后端，包括 OpenCL Runtime 检查、MNN OpenCL 编译、OpenCL 产物确认、benchmark 后端验证，以及使用 MNN 格式小模型完成基础文本推理。
+本文档记录如何在开发板上验证 MNN OpenCL 后端，包括 OpenCL Runtime 检查、MNN OpenCL 编译、OpenCL 产物确认、benchmark 后端验证，以及当前板端实测中遇到的 OpenCL backend fallback 问题。
+
+```{important}
+当前验证状态：MNN OpenCL 后端在本次板端测试中 **未验证通过**，本文档暂时作为问题记录与后续排查入口保留。
+
+当前已确认现象：
+
+- MNN CPU benchmark 可以正常运行。
+- `build-opencl` 可以生成 `benchmark.out` 和 `llm_demo`。
+- 指定 OpenCL 后端运行 benchmark 时，出现 `Can't Find type=3 backend, use 0 instead`。
+- 该现象表示 MNN 收到了 OpenCL 后端请求，但未找到可用的 OpenCL backend，随后回退到 CPU 执行。
+
+当前暂不确认是模型问题。该问题更可能与 OpenCL backend 注册、动态库加载、MNN 编译选项或板端 OpenCL Runtime 兼容性有关。后续需要继续定位。
+```
 
 ```{warning}
 MNN OpenCL 后端是否能加速具体 LLM / VLM 模型，取决于模型结构、MNN Runtime 配置、算子覆盖、GPU 驱动和 OpenCL Runtime 状态。
 
 本文档将验证分为两层：
 
-1. OpenCL 后端可用性验证：通过 `clinfo`、`libMNN_CL.so` 和 `benchmark.out forwardtype=3` 确认 MNN OpenCL 后端可以执行 MNN 模型。
-2. LLM 流程验证：通过 `Qwen2.5-0.5B-Instruct-MNN` 和 `backend_type=opencl` 验证 OpenCL build 下的 `llm_demo` 可以完成文本生成。
+1. OpenCL 后端可用性验证：通过 `clinfo`、`libMNN_CL.so` 和 `benchmark.out forwardtype=3` 确认 MNN OpenCL 后端是否可以执行 MNN 模型。
+2. LLM 流程验证：通过 `Qwen2.5-0.5B-Instruct-MNN` 和 `backend_type=opencl` 验证 OpenCL build 下的 `llm_demo` 是否可以完成文本生成。
 
-如果没有明确日志或性能对比，不建议直接写“所有 LLM 算子均已使用 OpenCL 加速”。
+在 OpenCL benchmark 出现 fallback 的情况下，不应直接写“LLM 已使用 OpenCL 加速”。
 ```
 
 ## 1. 适用场景
@@ -19,7 +32,7 @@ MNN OpenCL 后端是否能加速具体 LLM / VLM 模型，取决于模型结构�
 * 验证 MNN 是否能启用 OpenCL 后端编译。
 * 验证 `benchmark.out` 是否可以通过 OpenCL 后端执行 MNN 模型。
 * 验证 OpenCL build 下的 `llm_demo` 是否可以加载 MNN 文本模型。
-* 为后续 MNN GPU 加速模型推理提供基础验证路径。
+* 记录当前 MNN OpenCL backend 未找到的问题，便于后续继续排查。
 
 ## 2. 前置条件
 
@@ -120,6 +133,8 @@ cmake .. \
   -DCMAKE_BUILD_TYPE=Release \
   -DMNN_BUILD_SHARED=ON \
   -DMNN_OPENCL=ON \
+  -DMNN_SEP_BUILD=OFF \
+  -DMNN_USE_SYSTEM_LIB=ON \
   -DMNN_BUILD_BENCHMARK=ON \
   -DMNN_BUILD_LLM=ON \
   -DMNN_LOW_MEMORY=ON \
@@ -135,6 +150,8 @@ make -j$(nproc)
 | `CMAKE_BUILD_TYPE=Release` | 使用 Release 编译配置                           |
 | `MNN_BUILD_SHARED=ON`      | 构建共享库                                     |
 | `MNN_OPENCL=ON`            | 启用 OpenCL 后端                              |
+| `MNN_SEP_BUILD=OFF`        | 尝试将后端编入主构建，避免后端动态加载或注册问题                  |
+| `MNN_USE_SYSTEM_LIB=ON`    | 使用系统库依赖                                   |
 | `MNN_BUILD_BENCHMARK=ON`   | 编译 `benchmark.out`，用于明确验证 CPU / OpenCL 后端 |
 | `MNN_BUILD_LLM=ON`         | 启用 LLM 支持，生成 `llm_demo`                   |
 | `MNN_LOW_MEMORY=ON`        | 启用较低内存占用配置                                |
@@ -142,6 +159,21 @@ make -j$(nproc)
 
 ```{note}
 如果 `MNN_KLEIDIAI=ON` 在当前 MNN 版本或系统环境下编译失败，可先去掉该选项，优先完成 OpenCL 编译验证。
+```
+
+编译完成后，确认 CMake 参数：
+
+```bash
+grep -E "MNN_OPENCL|MNN_SEP_BUILD|MNN_USE_SYSTEM_LIB|MNN_BUILD_BENCHMARK|MNN_BUILD_LLM" CMakeCache.txt
+```
+
+期望至少包含：
+
+```text
+MNN_OPENCL:BOOL=ON
+MNN_SEP_BUILD:BOOL=OFF
+MNN_BUILD_BENCHMARK:BOOL=ON
+MNN_BUILD_LLM:BOOL=ON
 ```
 
 ## 7. 验证编译产物
@@ -159,7 +191,7 @@ find ~/mnn/MNN/build-opencl -iname "*CL*" | head -50
 find ~/mnn/MNN/build-opencl -iname "*opencl*" | head -50
 ```
 
-重点确认是否存在类似文件：
+重点关注是否存在类似文件：
 
 ```text
 libMNN_CL.so
@@ -177,7 +209,7 @@ ls -lh ~/mnn/MNN/build-opencl/benchmark.out
 ls -lh ~/mnn/MNN/build-opencl/llm_demo
 ```
 
-如果 `libMNN_CL.so`、`benchmark.out` 和 `llm_demo` 都存在，说明 OpenCL + Benchmark + LLM 构建基本完成。
+如果 `benchmark.out` 和 `llm_demo` 都存在，说明 Benchmark 和 LLM Demo 编译完成。
 
 ## 8. 配置运行时库路径
 
@@ -201,7 +233,7 @@ ldd ./llm_demo | grep -E "libMNN|Express|Audio|OpenCV|CL|Vulkan" || true
 说明当前运行时加载的是系统预装库，而不是本次源码编译生成的库。为避免版本不一致，建议设置 `LD_LIBRARY_PATH`：
 
 ```bash
-export LD_LIBRARY_PATH=$HOME/mnn/MNN/build-opencl:$HOME/mnn/MNN/build-opencl/express:$HOME/mnn/MNN/build-opencl/tools/audio:$HOME/mnn/MNN/build-opencl/tools/cv:${LD_LIBRARY_PATH:-}
+export LD_LIBRARY_PATH=$HOME/mnn/MNN/build-opencl:$HOME/mnn/MNN/build-opencl/source/backend/opencl:$HOME/mnn/MNN/build-opencl/express:$HOME/mnn/MNN/build-opencl/tools/audio:$HOME/mnn/MNN/build-opencl/tools/cv:${LD_LIBRARY_PATH:-}
 ```
 
 再次检查：
@@ -211,11 +243,14 @@ ldd ./benchmark.out | grep -E "libMNN|CL|OpenCL" || true
 ldd ./llm_demo | grep -E "libMNN|Express|Audio|OpenCV|CL|Vulkan" || true
 ```
 
-期望看到 MNN 相关库指向当前 build-opencl 目录，例如：
+期望 MNN 相关库优先指向当前 build-opencl 目录，例如：
 
 ```text
 libMNN.so => /home/cix/mnn/MNN/build-opencl/libMNN.so
-libMNN_CL.so => /home/cix/mnn/MNN/build-opencl/libMNN_CL.so
+```
+
+```{note}
+本次实测中，设置 `LD_LIBRARY_PATH` 后，`benchmark.out` 已经可以加载本地 `build-opencl/libMNN.so`，但 OpenCL benchmark 仍然出现 `Can't Find type=3 backend, use 0 instead`。因此该问题不只是普通的 `libMNN.so` 路径指向错误，还需要继续检查 OpenCL backend 注册或加载机制。
 ```
 
 ## 9. OpenCL 后端 benchmark 验证
@@ -227,7 +262,7 @@ libMNN_CL.so => /home/cix/mnn/MNN/build-opencl/libMNN_CL.so
 ```bash
 cd ~/mnn/MNN/build-opencl
 
-export LD_LIBRARY_PATH=$HOME/mnn/MNN/build-opencl:$HOME/mnn/MNN/build-opencl/express:$HOME/mnn/MNN/build-opencl/tools/audio:$HOME/mnn/MNN/build-opencl/tools/cv:${LD_LIBRARY_PATH:-}
+export LD_LIBRARY_PATH=$HOME/mnn/MNN/build-opencl:$HOME/mnn/MNN/build-opencl/source/backend/opencl:$HOME/mnn/MNN/build-opencl/express:$HOME/mnn/MNN/build-opencl/tools/audio:$HOME/mnn/MNN/build-opencl/tools/cv:${LD_LIBRARY_PATH:-}
 ```
 
 确认 benchmark 模型目录存在：
@@ -242,13 +277,53 @@ ls ../benchmark/models
 ./benchmark.out ../benchmark/models 10 3 0 4 2
 ```
 
+参数中的 `0` 表示 CPU 后端。
+
+当前实测结果：CPU benchmark 可以正常运行，能够输出各个模型的耗时结果。
+
 ### 9.2 OpenCL benchmark
 
 ```bash
 ./benchmark.out ../benchmark/models 10 3 3 4 2
 ```
 
-参数说明：
+参数中的 `3` 表示 OpenCL 后端。
+
+当前实测中，该命令未能真正使用 OpenCL 后端，出现以下错误：
+
+```text
+Can't Find type=3 backend, use 0 instead
+```
+
+该错误表示 MNN 没有找到 `type=3` 对应的 OpenCL backend，随后回退到 `type=0` CPU backend 执行。
+
+```{important}
+当前板端实测中，MNN OpenCL benchmark 未验证通过。
+
+虽然命令中指定了 OpenCL 后端，且终端会显示：
+
+Forward type: OpenCL
+
+但随后会出现：
+
+Can't Find type=3 backend, use 0 instead
+
+因此当前实际执行路径仍然回退到了 CPU，不能写作“OpenCL 推理已跑通”。
+```
+
+建议将错误截图保存到：
+
+```text
+docs/_static/images/mnn-opencl-backend-fallback.jpg
+```
+
+并在后续文档中引用：
+
+```md
+![MNN OpenCL backend fallback](../_static/images/mnn-opencl-backend-fallback.jpg)
+```
+
+### 9.3 benchmark 参数说明
 
 | 参数             |                   示例值 | 说明                       |
 | -------------- | --------------------: | ------------------------ |
@@ -259,20 +334,9 @@ ls ../benchmark/models
 | `thread_num`   |                   `4` | 线程数或执行配置                 |
 | `precision`    |                   `2` | 低精度 / FP16 相关配置          |
 
-如果 OpenCL benchmark 可以正常跑完，说明 MNN OpenCL 后端可以执行 MNN 模型推理。
-
-如果出现类似：
-
-```text
-Can't Find type = 3 backend, use 0 instead
-OpenCL init error
-```
-
-说明 OpenCL 后端没有真正可用，或当前运行时没有正确加载 `libMNN_CL.so`。
-
 ## 10. 下载验证模型
 
-本文档使用 `Qwen2.5-0.5B-Instruct-MNN` 作为基础 LLM 验证模型。
+本文档原计划使用 `Qwen2.5-0.5B-Instruct-MNN` 作为基础 LLM 验证模型。
 
 如果已经在 MNN CPU 页面中下载过该模型，可以跳过本节。
 
@@ -309,7 +373,7 @@ ls -lh ~/mnn/Qwen2.5-0.5B-Instruct-MNN/llm.mnn.weight
 
 ## 11. 创建 CPU / OpenCL 配置文件
 
-MNN LLM 模型目录中包含默认 `config.json`。为了对比 CPU 与 OpenCL 后端，建议分别创建：
+MNN LLM 模型目录中包含默认 `config.json`。为了对比 CPU 与 OpenCL 后端，可以分别创建：
 
 ```text
 config-cpu.json
@@ -384,6 +448,10 @@ grep -n "backend_type" ~/mnn/Qwen2.5-0.5B-Instruct-MNN/config-opencl.json
 "backend_type": "opencl"
 ```
 
+```{warning}
+由于当前 benchmark 已确认 OpenCL backend 未找到，LLM 的 `backend_type=opencl` 验证暂时不应作为 OpenCL 已跑通的证据。建议等 benchmark `forwardtype=3` 不再 fallback 后，再继续验证 LLM OpenCL 路径。
+```
+
 ## 12. LLM 文本推理验证
 
 创建 prompt 文件：
@@ -401,10 +469,12 @@ EOF
 ```bash
 cd ~/mnn/MNN/build-opencl
 
-export LD_LIBRARY_PATH=$HOME/mnn/MNN/build-opencl:$HOME/mnn/MNN/build-opencl/express:$HOME/mnn/MNN/build-opencl/tools/audio:$HOME/mnn/MNN/build-opencl/tools/cv:${LD_LIBRARY_PATH:-}
+export LD_LIBRARY_PATH=$HOME/mnn/MNN/build-opencl:$HOME/mnn/MNN/build-opencl/source/backend/opencl:$HOME/mnn/MNN/build-opencl/express:$HOME/mnn/MNN/build-opencl/tools/audio:$HOME/mnn/MNN/build-opencl/tools/cv:${LD_LIBRARY_PATH:-}
 
 ./llm_demo ~/mnn/Qwen2.5-0.5B-Instruct-MNN/config-cpu.json ~/mnn/text_baseline_prompt.txt 2>&1 | tee ~/mnn/mnn-cpu-llm.log
 ```
+
+如果能正常输出文本回复，说明当前 build 下的 LLM 文本流程可用。
 
 ### 12.2 OpenCL 配置验证
 
@@ -413,58 +483,120 @@ export LD_LIBRARY_PATH=$HOME/mnn/MNN/build-opencl:$HOME/mnn/MNN/build-opencl/exp
 ```bash
 cd ~/mnn/MNN/build-opencl
 
-export LD_LIBRARY_PATH=$HOME/mnn/MNN/build-opencl:$HOME/mnn/MNN/build-opencl/express:$HOME/mnn/MNN/build-opencl/tools/audio:$HOME/mnn/MNN/build-opencl/tools/cv:${LD_LIBRARY_PATH:-}
+export LD_LIBRARY_PATH=$HOME/mnn/MNN/build-opencl:$HOME/mnn/MNN/build-opencl/source/backend/opencl:$HOME/mnn/MNN/build-opencl/express:$HOME/mnn/MNN/build-opencl/tools/audio:$HOME/mnn/MNN/build-opencl/tools/cv:${LD_LIBRARY_PATH:-}
 
 ./llm_demo ~/mnn/Qwen2.5-0.5B-Instruct-MNN/config-opencl.json ~/mnn/text_baseline_prompt.txt 2>&1 | tee ~/mnn/mnn-opencl-llm.log
 ```
 
-如果能正常输出文本回复，说明当前 OpenCL build 可以完成模型加载和文本生成流程。
-
 ```{warning}
-LLM 文本生成成功不等于所有算子都已确认使用 OpenCL。是否真正走 OpenCL，需要结合 `backend_type=opencl` 配置、运行日志、benchmark 结果以及 CPU / OpenCL 性能对比综合判断。
+当前 OpenCL benchmark 已出现 fallback 到 CPU 的问题，因此即使 `config-opencl.json` 能够启动文本生成，也不能直接说明 LLM 已经使用 OpenCL 后端。需要先解决 `Can't Find type=3 backend, use 0 instead` 问题。
 ```
 
-## 13. 对比 CPU / OpenCL 日志
+## 13. 当前实测结果记录
 
-查看 CPU 日志：
+当前板端实测状态如下：
 
-```bash
-grep -E "backend|OpenCL|CPU|prefill|decode|speed|time" ~/mnn/mnn-cpu-llm.log
-```
+| 验证层级   | 验证项                                        | 当前状态        | 说明                             |
+| ------ | ------------------------------------------ | ----------- | ------------------------------ |
+| 系统级    | `clinfo` 可识别 OpenCL device                 | 待补充         | 需要根据实际 `clinfo` 输出确认           |
+| 编译级    | `MNN_OPENCL=ON` 编译                         | 已执行         | `build-opencl` 可以完成编译          |
+| 产物级    | `benchmark.out`                            | 通过          | 已生成                            |
+| 产物级    | `llm_demo`                                 | 通过          | 已生成                            |
+| 运行级    | CPU benchmark                              | 通过          | `forwardtype=0` 可以正常运行         |
+| 运行级    | OpenCL benchmark                           | 未通过         | `forwardtype=3` fallback 到 CPU |
+| 错误信息   | `Can't Find type=3 backend, use 0 instead` | 已复现         | 表示未找到 OpenCL backend           |
+| LLM 流程 | 0.5B MNN 文本模型                              | 暂不作为 GPU 证据 | 需要先解决 OpenCL backend fallback  |
 
-查看 OpenCL 日志：
-
-```bash
-grep -E "backend|OpenCL|CPU|prefill|decode|speed|time" ~/mnn/mnn-opencl-llm.log
-```
-
-如果 OpenCL 日志中出现 OpenCL 初始化、OpenCL backend、kernel、device 等信息，同时 benchmark `forwardtype=3` 可以正常执行，则可以说明当前 OpenCL 后端具备基础可用性。
-
-## 14. 验证结果记录
-
-如果完成以下项目，可以认为 MNN OpenCL 后端基础验证通过：
-
-| 验证层级      | 验证项                                           | 结果  |
-| --------- | --------------------------------------------- | --- |
-| 系统级       | `clinfo` 可识别 OpenCL device                    | 待补充 |
-| 编译级       | `MNN_OPENCL=ON` 编译成功                          | 待补充 |
-| 产物级       | `libMNN_CL.so` 生成                             | 待补充 |
-| Benchmark | `benchmark.out` 使用 `forwardtype=3` 可执行        | 待补充 |
-| LLM 流程    | `config-opencl.json` 设置 `backend_type=opencl` | 待补充 |
-| LLM 流程    | `llm_demo` 可加载模型并生成文本                         | 待补充 |
-| 结论        | 是否确认 OpenCL 后端基础可用                            | 待补充 |
-
-建议保存运行截图到：
+当前结论：
 
 ```text
-docs/_static/images/mnn-opencl-qwen2.5-0.5b-result.jpg
+MNN CPU 路径已验证可用。
+MNN OpenCL 编译路径和 benchmark 工具已生成。
+但 MNN OpenCL benchmark 当前未验证通过，指定 forwardtype=3 后 fallback 到 CPU。
+因此当前不能写作 MNN GPU/OpenCL 推理已跑通。
 ```
 
-并在验证通过后添加图片：
+## 14. 后续排查方向
 
-```md
-![MNN OpenCL Qwen2.5 0.5B result](../_static/images/mnn-opencl-qwen2.5-0.5b-result.jpg)
+后续可以从以下方向继续定位：
+
+### 14.1 检查 OpenCL Runtime
+
+```bash
+clinfo
+clinfo | grep -E "Platform Name|Device Name|Device Version|Driver Version"
+ls /etc/OpenCL/vendors/
 ```
+
+确认系统是否存在 OpenCL platform 和 device。
+
+### 14.2 检查 OpenCL backend 产物
+
+```bash
+cd ~/mnn/MNN/build-opencl
+
+find . -type f \( -name "libMNN_CL.so*" -o -name "*MNN_CL*.so*" -o -name "*OpenCL*.so*" \) -print -exec ls -lh {} \;
+```
+
+确认本地 build 中是否真的生成了 OpenCL backend 动态库。
+
+### 14.3 检查动态库加载路径
+
+```bash
+cd ~/mnn/MNN/build-opencl
+
+ldd ./benchmark.out | grep -E "libMNN|CL|OpenCL" || true
+ldd ./llm_demo | grep -E "libMNN|Express|Audio|OpenCV|CL|Vulkan" || true
+```
+
+确认是否加载了本地构建产物，而不是系统预装库。
+
+### 14.4 尝试强制预加载 OpenCL backend
+
+如果本地能找到 `libMNN_CL.so`，可尝试：
+
+```bash
+cd ~/mnn/MNN/build-opencl
+
+CL_SO=$(find . -name "libMNN_CL.so*" | head -1)
+echo "$CL_SO"
+
+LD_PRELOAD="$CL_SO" ./benchmark.out ../benchmark/models 10 3 3 4 2
+```
+
+如果仍然出现：
+
+```text
+Can't Find type=3 backend, use 0 instead
+```
+
+说明问题可能不只是动态库搜索路径，而是 OpenCL backend 注册或编译方式问题。
+
+### 14.5 尝试不同 MNN 编译选项
+
+可尝试重新编译：
+
+```bash
+cd ~/mnn/MNN
+
+rm -rf build-opencl
+mkdir -p build-opencl
+cd build-opencl
+
+cmake .. \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DMNN_BUILD_SHARED=ON \
+  -DMNN_OPENCL=ON \
+  -DMNN_SEP_BUILD=OFF \
+  -DMNN_USE_SYSTEM_LIB=ON \
+  -DMNN_BUILD_BENCHMARK=ON \
+  -DMNN_BUILD_LLM=ON \
+  -DMNN_LOW_MEMORY=ON
+
+make -j$(nproc)
+```
+
+如果 `MNN_KLEIDIAI=ON` 干扰 OpenCL 构建，可先去掉 `MNN_KLEIDIAI=ON`，优先验证 OpenCL backend 是否可以注册。
 
 ## 15. 常见问题
 
@@ -512,10 +644,11 @@ cmake .. \
   -DCMAKE_BUILD_TYPE=Release \
   -DMNN_BUILD_SHARED=ON \
   -DMNN_OPENCL=ON \
+  -DMNN_SEP_BUILD=OFF \
+  -DMNN_USE_SYSTEM_LIB=ON \
   -DMNN_BUILD_BENCHMARK=ON \
   -DMNN_BUILD_LLM=ON \
-  -DMNN_LOW_MEMORY=ON \
-  -DMNN_KLEIDIAI=ON
+  -DMNN_LOW_MEMORY=ON
 
 make -j$(nproc)
 ```
@@ -557,7 +690,7 @@ ldd ./llm_demo | grep -E "libMNN|Express|Audio|OpenCV|CL|Vulkan"
 说明当前运行时加载的是系统预装库，不是当前 build-opencl 目录下的库。请设置：
 
 ```bash
-export LD_LIBRARY_PATH=$HOME/mnn/MNN/build-opencl:$HOME/mnn/MNN/build-opencl/express:$HOME/mnn/MNN/build-opencl/tools/audio:$HOME/mnn/MNN/build-opencl/tools/cv:${LD_LIBRARY_PATH:-}
+export LD_LIBRARY_PATH=$HOME/mnn/MNN/build-opencl:$HOME/mnn/MNN/build-opencl/source/backend/opencl:$HOME/mnn/MNN/build-opencl/express:$HOME/mnn/MNN/build-opencl/tools/audio:$HOME/mnn/MNN/build-opencl/tools/cv:${LD_LIBRARY_PATH:-}
 ```
 
 ### 15.6 benchmark OpenCL 失败
@@ -568,13 +701,38 @@ export LD_LIBRARY_PATH=$HOME/mnn/MNN/build-opencl:$HOME/mnn/MNN/build-opencl/exp
 ./benchmark.out ../benchmark/models 10 3 3 4 2
 ```
 
-出现 OpenCL 初始化失败或 fallback 到 CPU，需要检查：
+出现：
 
-* `clinfo` 是否能识别 OpenCL device。
-* `libMNN_CL.so` 是否生成。
-* `LD_LIBRARY_PATH` 是否指向当前 build-opencl。
-* 是否加载了系统旧版 MNN 库。
-* 当前 GPU OpenCL Runtime 是否与 MNN OpenCL 后端兼容。
+```text
+Can't Find type=3 backend, use 0 instead
+```
+
+说明 MNN 未找到 OpenCL backend，并回退到 CPU。
+
+可能原因：
+
+* `libMNN_CL.so` 未生成。
+* `libMNN_CL.so` 未被正确加载。
+* OpenCL backend 没有注册到 MNN Runtime。
+* `MNN_SEP_BUILD` / 动态后端加载策略与当前 Linux 环境不匹配。
+* 系统 OpenCL Runtime 与 MNN OpenCL 后端存在兼容问题。
+* 当前构建加载了系统旧版 MNN 库，导致本地 OpenCL backend 未生效。
+
+当前处理建议：
+
+```bash
+cd ~/mnn/MNN/build-opencl
+
+find . -type f \( -name "libMNN_CL.so*" -o -name "*MNN_CL*.so*" -o -name "*OpenCL*.so*" \) -print -exec ls -lh {} \;
+
+ldd ./benchmark.out | grep -E "libMNN|CL|OpenCL" || true
+
+export LD_LIBRARY_PATH=$HOME/mnn/MNN/build-opencl:$HOME/mnn/MNN/build-opencl/source/backend/opencl:$HOME/mnn/MNN/build-opencl/express:$HOME/mnn/MNN/build-opencl/tools/audio:$HOME/mnn/MNN/build-opencl/tools/cv:${LD_LIBRARY_PATH:-}
+
+./benchmark.out ../benchmark/models 10 3 3 4 2
+```
+
+如果仍然失败，建议保留该问题，后续结合 MNN 版本、Release 基线和 GPU OpenCL Runtime 继续排查。
 
 ### 15.7 模型文件没有完整下载
 
@@ -604,11 +762,7 @@ git lfs pull
 * CPU / OpenCL 的性能是否存在差异。
 * 是否存在 fallback 到 CPU 的日志。
 
-在无法确认 OpenCL 实际参与推理前，建议表述为：
-
-```text
-MNN OpenCL build 可完成模型加载和文本推理流程，但是否所有算子均实际使用 OpenCL 后端仍需进一步确认。
-```
+在当前 benchmark 已经出现 fallback 的情况下，不建议使用 LLM 文本生成结果作为 GPU 推理成功证据。
 
 ### 15.9 OpenCL 路径反而更慢
 
@@ -622,7 +776,20 @@ MNN OpenCL build 可完成模型加载和文本推理流程，但是否所有算
 
 建议保留 CPU 路径作为稳定 baseline。
 
-## 16. 参考资料
+## 16. 当前文档结论
+
+当前文档结论如下：
+
+```text
+MNN CPU 路径已验证可用。
+MNN OpenCL 相关编译流程已尝试，benchmark.out 与 llm_demo 可以生成。
+但在当前板端环境下，benchmark 指定 forwardtype=3 后出现 Can't Find type=3 backend, use 0 instead，并回退到 CPU。
+因此，当前 MNN GPU / OpenCL 推理未验证通过，暂作为已知问题保留。
+```
+
+后续若需要继续推进，应优先解决 OpenCL backend 注册或加载问题，而不是继续更换 LLM 模型。
+
+## 17. 参考资料
 
 * [MNN GitHub Repository](https://github.com/alibaba/MNN)
 * [MNN Build Documentation](https://mnn-docs.readthedocs.io/en/2.6.1/compile/engine.html)
