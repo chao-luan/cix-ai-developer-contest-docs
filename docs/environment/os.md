@@ -60,8 +60,8 @@ Windows、Linux 和 macOS 环境均推荐使用 balenaEtcher 完成镜像写入�
 </thead>
 <tbody>
 <tr class="odd">
-<td><p>瑞莎星睿 O6</p>
-<p>铭凡MS-R1</p></td>
+<td>瑞莎星睿 O6<br>
+铭凡MS-R1</td>
 <td><a href="https://archive.cixtech.com/cdimage_debian/debian-12.13.0-arm64-DVD-cix-20260514.iso">https://archive.cixtech.com/cdimage_debian/debian-12.13.0-arm64-DVD-cix-20260514.iso</a></td>
 </tr>
 <tr class="even">
