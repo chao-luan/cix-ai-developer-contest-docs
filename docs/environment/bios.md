@@ -132,7 +132,7 @@ BIOS 更新过程中，请保持设备持续供电，不要拔出 U 盘、按下
 部分开发板进入 UEFI Shell 后会自动检测并执行 startup.nsh。如果更新程序已经自动启动，请勿重复输入命令。
 ```
 
-### 2.1.5.1 执行 startup.nsh
+### 方式一：执行 startup.nsh
 
 如果更新包提供 startup.nsh，且官方说明要求通过该脚本进行更新，输入以下命令并按 Enter 键：
 
@@ -142,7 +142,7 @@ startup.nsh
 
 startup.nsh 通常会自动调用 BIOS 更新工具和对应的固件文件。开发者不需要再手动执行更新包中的其他 .efi 工具。
 
-### 2.1.5.2 执行 FlashUpdate.efi
+### 方式一：执行 FlashUpdate.efi
 
 如果更新包未提供 startup.nsh，或官方说明明确要求使用 FlashUpdate.efi，执行：
 
@@ -168,7 +168,7 @@ FlashUpdate.efi -f board_bios_general.bin
 
 **示例一：Radxa Orion O6**
 
-从 Radxa 官方资源页面[资源汇总下载 \| Radxa Docs](https://docs.radxa.com/orion/download#bios-%E5%9B%BA%E4%BB%B6)下载<https://dl.radxa.com/orion/o6/images/bios/orion-o6-bios-1.1.0-1.zip>或赛事资源包中找到与当前设备匹配的 BIOS 更新包。
+从 [Radxa 官方资源汇总下载页面](https://docs.radxa.com/orion/download#bios-%E5%9B%BA%E4%BB%B6)下载Radxa Orion O6的 BIOS 更新包，也可通过本节开头提供的直接下载链接获取。
 
 将解压后的全部文件按照原有目录结构复制到 FAT32 U 盘根目录。
 
@@ -182,7 +182,7 @@ startup.nsh
 
 **示例二：Orange Pi 6 Plus**
 
-从 Orange Pi 官方资源页面[OrangePi 6 Plus-Orange Pi官网](http://www.orangepi.cn/html/hardWare/computerAndMicrocontrollers/service-and-support/Orange-Pi-6-Plus.html)或赛事资源包中下载与当前设备匹配的 General BIOS 更新包。
+从 [Orange Pi 官方资源页面](http://www.orangepi.cn/html/hardWare/computerAndMicrocontrollers/service-and-support/Orange-Pi-6-Plus.html)下载Orange Pi 6 Plus的 BIOS 更新包，也可通过本节开头提供的直接下载链接获取。
 
 将解压后的全部文件按照原有目录结构复制到 FAT32 U 盘。
 
@@ -192,7 +192,7 @@ startup.nsh
 FlashUpdate.efi -f OPI6PLUS_BIOS_1.4_General.bin
 ```
 
-其中，OPI6PLUS_BIOS_1.4_General.bin 可以替换为当前赛事资源包或官方 BIOS 更新包中的实际文件名。
+其中，OPI6PLUS_BIOS_1.4_General.bin 可以替换为当前官方 BIOS 更新包中的实际文件名。
 
 ## 2.1.7 重启与验证
 
