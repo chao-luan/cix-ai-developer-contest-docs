@@ -87,13 +87,9 @@ Super_Resolution
 
 ### 3.2.3.3 安装环境与依赖
 
-进入 AI Model Hub 根目录后，应先阅读根目录中的 ReadMe.md 或
+进入 AI Model Hub 根目录后，应先阅读根目录中的 ReadMe.md 或 ReadMe_EN.md，并按照其中“二、环境与依赖”的说明安装当前版本所需依赖。
 
-ReadMe_EN.md，并按照其中“二、环境与依赖”的说明安装当前版本所需依赖。
-
-不同模型和不同任务所需的 Python 依赖可能不同，不要默认直接执行根目录中的
-
-requirements.txt，也不要仅根据脚本导入内容自行升级系统已有软件包。
+不同模型和不同任务所需的 Python 依赖可能不同，不要默认直接执行根目录中的 requirements.txt，也不要仅根据脚本导入内容自行升级系统已有软件包。
 
 ## 3.2.4 运行 ResNet50 图像分类示例
 
