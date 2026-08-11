@@ -147,11 +147,8 @@ python3 -m pip --version
 网络访问 PyPI 较慢时，可以选择配置 pip 镜像源：
 
 ```bash
-python3 -m pip config set \
-global.index-url \
+python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 ```
-
-https://pypi.tuna.tsinghua.edu.cn/simple
 
 检查配置：
 
@@ -677,7 +674,7 @@ model_00001-of-00003.gguf
 
 ### 4.2.3.4 运行命令行推理
 
-1.  查看已下载的 GGUF 模型文件
+### 1. 查看已下载的 GGUF 模型文件
 
 ```bash
 find "$PWD/models" -type f -name "*.gguf"
@@ -685,7 +682,7 @@ find "$PWD/models" -type f -name "*.gguf"
 
 根据模型 README、下载说明或 model-cli list 输出，确认需要加载的入口模型文件。
 
-2.  设置模型路径
+### 2. 设置模型路径
 
 将 MODEL_PATH 设置为入口模型文件的绝对路径：
 
@@ -701,7 +698,7 @@ MODEL_PATH="$PWD/models/Qwen2.5-1.5B-Instruct-Q4_K_M.gguf"
 
 注意：不要自动选择搜索结果中的第一个 .gguf 文件。在多模态、多模型或分片模型目录中，第一个文件可能是 mmproj.gguf、Embedding 模型或非入口分片，无法作为主模型直接加载。具体入口文件应以模型 README、下载说明或 model-cli list 的结果为准。
 
-3.  检查模型路径
+### 3. 检查模型路径
 
 ```bash
 echo "$MODEL_PATH"
@@ -710,13 +707,13 @@ ls -lh "$MODEL_PATH"
 
 如果文件路径正确，ls 命令将输出模型文件的大小、权限和修改时间等信息。
 
-4.  查看 llama-cli 参数
+### 4. 查看 llama-cli 参数
 
 ```bash
 ./bin/llama-cli --help
 ```
 
-5.  执行基础文本推理
+### 5. 执行基础文本推理
 
 ```bash
 ./bin/llama-cli \
@@ -725,7 +722,7 @@ ls -lh "$MODEL_PATH"
 -n 128
 ```
 
-6.  观察设备运行状态
+### 6. 观察设备运行状态
 
 推理过程中，在另一个终端执行：
 
@@ -747,9 +744,7 @@ HLIELlama 推荐直接运行 llama-server。新版本不再建议使用 run_llam
 
 使用预加载模型方式启动。
 
-仅供当前设备上的 Agent 或客户端访问时，建议服务只监听本机地址。先查看当前
-
-版本支持的参数：
+仅供当前设备上的 Agent 或客户端访问时，建议服务只监听本机地址。先查看当前版本支持的参数：
 
 ```bash
 ./bin/llama-server --help
@@ -764,10 +759,9 @@ HLIELlama 推荐直接运行 llama-server。新版本不再建议使用 run_llam
 --host 127.0.0.1 \
 --port 17701 \
 --cache-ram 0
-如果当前版本不支持 --host 参数，应以 ./bin/llama-server --help 的实际输出和
 ```
 
-赛事指定版本的 HLIELlama 使用指南为准。
+如果当前版本不支持 --host 参数，应以 ./bin/llama-server --help 的实际输出和赛事指定版本的 HLIELlama 使用指南为准。
 
 需要供局域网中的其他设备访问时，应将服务监听地址设置为 0.0.0.0。确认当前
 
@@ -815,7 +809,12 @@ HLIELlama 默认可能启用 Prompt Cache，用于复用历史 KV Cache、降低
 curl -sS \
 http://127.0.0.1:17701/v1/models \
 | python3 -m json.tool
-如果从局域网中的其他设备验证，应将 127.0.0.1 替换为模型服务所在设备的实际 局域网 IP，例如： curl -sS \ http://192.168.1.100:17701/v1/models \ | python3 -m json.tool
+```
+
+如果从局域网中的其他设备验证，应将 127.0.0.1 替换为模型服务所在设备的实际 局域网 IP，例如： 
+
+```bash
+curl -sS \ http://192.168.1.100:17701/v1/models \ | python3 -m json.tool
 ```
 
 发送最小文本请求：
@@ -976,7 +975,7 @@ sudo bash service/uninstall_llama-server.sh
 
 ### 4.2.3.9 可选功能
 
-#### 4.2.3.9.1 多模态模型
+#### 1. 多模态模型
 
 多模态模型通常包含语言主模型和视觉模型：
 
@@ -1000,7 +999,7 @@ mmproj.gguf
 
 后摩部分视觉模型采用固定输入分辨率。图片会按照模型要求 Resize 和 Padding。目标检测等任务返回的坐标可能基于处理后的图片，应用端需要根据 Resize 和 Padding 过程映射回原图。
 
-#### 4.2.3.9.2 Embedding 模型
+#### 2. Embedding 模型
 
 ```bash
 ./bin/llama-server \
@@ -1020,7 +1019,7 @@ Embedding 模型可用于：
 - 语义检索；
 - Agent 长期记忆检索。
 
-#### 4.2.3.9.3 Rerank 模型
+#### 3. Rerank 模型
 
 ```bash
 ./bin/llama-server \
@@ -1031,7 +1030,7 @@ Embedding 模型可用于：
 
 Rerank 模型可对向量检索结果进行重新排序。
 
-#### 4.2.3.9.4 并发访问
+#### 4. 并发访问
 
 多用户访问时，可以根据模型类型使用：
 
@@ -1043,7 +1042,7 @@ Rerank 模型可对向量检索结果进行重新排序。
 
 应先完成单请求验证，再逐步提高并发数。
 
-#### 4.2.3.9.5 Qwen 思考模式
+#### 5. Qwen 思考模式
 
 不同版本关闭 Qwen 思考模式的参数可能不同：
 
@@ -1072,9 +1071,9 @@ OpenAI 兼容请求还可通过请求体控制：
 }
 ```
 
-具体能力应以模型和赛事 HLIELlama 版本为准。基础连通性测试不建议加入这些可选参数。
+具体能力应以模型和赛事 HLIELlama 版本为准,基础连通性测试不建议加入这些可选参数。
 
-更多模型转换、多卡调度、投机解码、ASR、OCR、C/C++ 二次开发和底层模型调试方法，应参见赛事指定版本的《HLIELlama 部署及使用指南》。
+更多模型转换、多卡调度、投机解码、ASR、OCR、C/C++ 二次开发和底层模型调试方法，参见后摩开发者中心相关文档。
 
 ## 4.2.4 性能测试
 
@@ -1229,14 +1228,14 @@ HLIELlama 默认启用 Prompt Cache 时，Prefill 统计可能排除已经复用
 
 后摩开发者社区：
 
-https://developer.houmoai.com/
+[点击此处跳转](https://developer.houmoai.com/) 
 
 后摩资源中心：
 
-https://developer.houmoai.com/resources_v2
+[点击此处跳转](https://developer.houmoai.com/resources_v2) 
 
 后摩文档中心：
 
-https://developer.houmoai.com/document
+[点击此处跳转](https://developer.houmoai.com/document) 
 
 HLIELlama、HLIECpp、HLIEPython 和 HLIEvLLM 的完整模型支持范围、多芯调度、投机解码、模型转换、C/C++ API 和深度性能调优方法，以后摩官方部署及使用指南为准。
