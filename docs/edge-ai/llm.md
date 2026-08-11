@@ -33,29 +33,23 @@ llama.cpp 是面向本地大语言模型推理的轻量级开源框架，主要�
 本节介绍：
 
 - llama.cpp 社区源码获取和编译；
-
 - CPU / KleidiAI 推理；
-
 - CPU 线程数和 taskset 绑核；
-
 - Vulkan GPU 推理；
-
 - CPU 与 Vulkan 性能测试。
 
 KleidiAI 是面向 Arm CPU 的优化微内核库，属于 llama.cpp CPU 后端的性能优化能力，并不是独立的硬件推理后端。
 
 Vulkan 用于将部分或全部模型层卸载至 GPU。
 
-### 一、准备环境
+### 3.1.1.1 准备环境
 
 开始前，请确认开发板已经启动至赛事指定的 Debian 12 系统，并具备网络连接和足够的磁盘空间。
 
 建议预留：
 
 - 模型存储空间：根据实际 GGUF 模型大小确定；
-
 - 源码和编译空间：建议至少预留 5 GB；
-
 - 运行内存：应大于模型文件、KV Cache 和运行时缓冲区所需空间之和。
 
 安装基础依赖：
@@ -82,7 +76,7 @@ gcc --version
 taskset --version
 ```
 
-### 二、获取 llama.cpp 社区源码
+### 3.1.1.2 获取 llama.cpp 社区源码
 
 创建工作目录：
 
@@ -127,7 +121,7 @@ git pull --ff-only
 
 更新完成后再次记录 Commit，并重新执行编译。
 
-### 三、编译 CPU / KleidiAI 版本
+### 3.1.1.3 编译 CPU / KleidiAI 版本
 
 清理旧构建目录：
 
@@ -194,7 +188,7 @@ ls -lh build-cpu/bin/llama-bench
 
 如果 llama-cli 和 llama-bench 均已生成，说明 CPU 版本编译完成。
 
-### 四、准备 GGUF 模型
+### 3.1.1.4 准备 GGUF 模型
 
 本节以 Qwen2.5-0.5B-Instruct-GGUF 的 Q4_K_M 量化模型作为基础验证模型。
 
@@ -256,7 +250,7 @@ MODEL=~/models/qwen2.5-0.5b/qwen2.5-0.5b-instruct-q4_k_m.gguf
 ls -lh "$MODEL"
 ```
 
-### 五、检查 CPU 拓扑并设置绑核范围
+### 3.1.1.5 检查 CPU 拓扑并设置绑核范围
 
 CIX P1 包含 8 个 Cortex-A720 核心和 4 个 Cortex-A520 小核。CPU 推理时建议绑定 Cortex-A720 核心，避免推理线程被调度到低性能核心，从而影响性能和测试稳定性。
 
@@ -302,7 +296,7 @@ CPU_LIST 中的 CPU 数量应与 THREAD_NUM 保持一致。
 
 -t 仅用于设置 llama.cpp 的 CPU 推理线程数，不能代替 taskset 的 CPU 亲和性设置。
 
-### 六、运行 CPU / KleidiAI 推理
+### 3.1.1.6 运行 CPU / KleidiAI 推理
 
 进入 llama.cpp 源码目录：
 
@@ -357,16 +351,12 @@ Ctrl+C
 如果输出内容异常、出现大量重复文本或未按照指令回答，应检查：
 
 1.  模型是否完整；
-
 2.  当前版本是否识别模型内置 Chat Template；
-
 3.  是否启用了不合适的交互模式；
-
 4.  模型量化格式是否与当前版本兼容；
-
 5.  当前版本的 llama-cli --help 是否提供对应的对话参数。
 
-### 七、验证 KleidiAI
+### 3.1.1.7 验证 KleidiAI
 
 保存完整运行日志：
 
@@ -410,16 +400,12 @@ build-cpu/CMakeCache.txt
 正式性能验证时，应结合以下信息综合判断：
 
 - llama.cpp Commit；
-
 - CMake 配置；
-
 - 运行日志；
-
 - CPU 指令能力；
-
 - 相同模型和参数下的性能结果。
 
-### 八、CPU 性能测试
+### 3.1.1.8 CPU 性能测试
 
 使用 llama-bench 进行基础测试：
 
@@ -464,19 +450,12 @@ taskset -c "$CPU_LIST" \
 重点记录：
 
 - pp512；
-
 - tg128；
-
 - Token/s；
-
 - 线程数；
-
 - CPU affinity；
-
 - 模型名称及量化方式；
-
 - llama.cpp Commit；
-
 - 系统温度和后台负载。
 
 CPU 绑核通常用于减少操作系统调度带来的波动，提高多次性能测试结果的一致性。
@@ -484,22 +463,15 @@ CPU 绑核通常用于减少操作系统调度带来的波动，提高多次性�
 进行正式性能对比时，应固定：
 
 - 模型文件；
-
 - CPU 线程数；
-
 - CPU 绑定范围；
-
 - Prompt Token 数；
-
 - 生成 Token 数；
-
 - 系统电源状态；
-
 - 散热状态；
-
 - 后台进程负载。
 
-### 九、可选：编译 Vulkan 版本
+### 3.1.1.9 可选：编译 Vulkan 版本
 
 llama.cpp Vulkan 后端依赖 CIX GO 图形引擎提供的 GPU 驱动和 Vulkan Runtime。
 
@@ -575,7 +547,7 @@ ls -lh build-vulkan/bin/llama-cli
 ls -lh build-vulkan/bin/llama-bench
 ```
 
-### 十、运行 Vulkan 推理
+### 3.1.1.10 运行 Vulkan 推理
 
 Vulkan 推理的主要计算由 GPU 承担，但 CPU 仍负责 Tokenizer、任务调度、内存管理以及部分未卸载至 GPU 的计算。
 
@@ -611,39 +583,26 @@ taskset -c "$GPU_CPU_LIST" \
 其中：
 
 - taskset -c "\$GPU_CPU_LIST" 将宿主进程绑定至 CPU 0、1、10、11；
-
 - -t "\$GPU_THREAD_NUM" 将 llama.cpp CPU 线程数设置为 4；
-
 - -ngl 99 表示尝试将尽可能多的模型层卸载至 GPU。
 
 实际能够卸载的模型层数取决于：
 
 - 模型结构和模型大小；
-
 - 可用内存；
-
 - GPU 驱动版本；
-
 - Vulkan Runtime；
-
 - llama.cpp Commit；
-
 - Vulkan 后端算子支持情况。
 
 运行时重点检查：
 
 1.  vulkaninfo 能够识别板载 GPU；
-
 2.  CMakeCache.txt 中显示 GGML_VULKAN=ON；
-
 3.  执行的是 build-vulkan/bin/llama-cli；
-
 4.  日志中出现 Vulkan 设备信息；
-
 5.  日志中显示模型层被卸载至 GPU；
-
 6.  模型能够正常生成文本；
-
 7.  未出现 Vulkan 初始化失败或完全回退至 CPU。
 
 检查关键日志：
@@ -657,11 +616,8 @@ grep -Ei \
 满足以下条件，可以认为 Vulkan 推理路径基本跑通：
 
 - Vulkan Runtime 能够识别 GPU；
-
 - llama.cpp 已启用 Vulkan 后端；
-
 - 运行日志显示 Vulkan 设备和模型层卸载信息；
-
 - 模型能够完成文本生成。
 
 如果出现：
@@ -710,7 +666,7 @@ taskset -c "$GPU_CPU_LIST" \
 
 随后逐步提高 -ngl，观察内存占用、模型层卸载数量和运行结果。
 
-### 十一、CPU 与 Vulkan 性能对比
+### 3.1.1.11 CPU 与 Vulkan 性能对比
 
 CPU / KleidiAI 测试使用全部 8 个 Cortex-A720 核心：
 
@@ -756,21 +712,13 @@ taskset -c "$GPU_CPU_LIST" \
 两次测试应使用相同的：
 
 - 模型文件；
-
 - 模型量化方式；
-
 - Prompt Token 数；
-
 - 生成 Token 数；
-
 - 测试重复次数；
-
 - 系统镜像；
-
 - 系统电源状态；
-
 - 散热状态；
-
 - 后台进程负载。
 
 CPU 和 Vulkan 使用不同的 CPU 绑定配置：
@@ -792,7 +740,6 @@ THREAD_NUM=4
 但正式发布的默认测试配置仍建议使用：
 
 - CPU / KleidiAI：8 个 Cortex-A720；
-
 - Vulkan：4 个最高频 Cortex-A720。
 
 llama-bench 的结果主要用于比较模型推理后端和参数配置，不等同于完整应用的端到端响应时间。
@@ -809,26 +756,17 @@ vulkaninfo --summary
 同时记录：
 
 - 模型名称；
-
 - 量化类型；
-
 - CPU 推理线程数；
-
 - CPU 绑定范围；
-
 - -ngl 数值；
-
 - Prompt Processing 性能；
-
 - Text Generation 性能；
-
 - 系统温度；
-
 - 后台负载；
-
 - 异常日志。
 
-### 十二、llama.cpp 常见问题
+### 3.1.1.12 llama.cpp 常见问题
 
 | **问题现象**            | **可能原因**                               | **建议处理方式**                   |
 |-------------------------|--------------------------------------------|------------------------------------|
@@ -867,18 +805,13 @@ embeddings_bf16.bin
 本节介绍：
 
 - MNN 社区源码获取和编译；
-
 - MNN 格式模型下载；
-
 - CPU / KleidiAI 推理；
-
 - taskset 绑核；
-
 - OpenCL GPU 推理；
-
 - CPU 与 OpenCL 性能测试。
 
-### 一、准备环境并获取 MNN 源码
+### 3.1.2.1 准备环境并获取 MNN 源码
 
 安装基础依赖：
 
@@ -940,7 +873,7 @@ git pull --ff-only
 
 更新后应重新记录 Commit，并重新编译。
 
-### 二、编译 MNN CPU / KleidiAI 版本
+### 3.1.2.2 编译 MNN CPU / KleidiAI 版本
 
 清理旧构建目录：
 
@@ -1029,18 +962,14 @@ test -x "$LLM_BENCH"
 "$LLM_BENCH" --help || true
 ```
 
-### 三、检查动态库加载
+### 3.1.2.3 检查动态库加载
 
 如果系统中已经安装其他版本的 MNN，源码编译的 llm_demo 可能错误加载系统中的旧版 libMNN.so，从而出现：
 
 - undefined symbol；
-
 - 程序异常退出；
-
 - 模型加载失败；
-
 - OpenCL 后端缺失；
-
 - 运行结果与构建配置不一致。
 
 检查动态库：
@@ -1067,7 +996,7 @@ ldd "$LLM_DEMO" \
 
 不建议在没有确认影响范围的情况下永久写入 ~/.bashrc，避免影响系统中其他依赖 MNN 的程序。
 
-### 四、准备 MNN 模型
+### 3.1.2.4 准备 MNN 模型
 
 本节以 Qwen2.5-0.5B-Instruct-MNN 作为基础验证模型。
 
@@ -1128,7 +1057,7 @@ MODEL_DIR=~/mnn/Qwen2.5-0.5B-Instruct-MNN
 ls -lh "$MODEL_DIR/config.json"
 ```
 
-### 五、创建 MNN CPU 配置
+### 3.1.2.5 创建 MNN CPU 配置
 
 MNN CPU / KleidiAI 推理默认绑定全部 8 个 Cortex-A720 核心：
 
@@ -1221,9 +1150,7 @@ EOF
 进行 MNN CPU / KleidiAI 推理时，应确保以下三项一致：
 
 - CPU_LIST 中包含的 CPU 数量；
-
 - config-cpu.json 中的 thread_num；
-
 - llm_bench 命令中的 -t 参数。
 
 默认配置为：
@@ -1234,7 +1161,7 @@ config-cpu.json thread_num：8
 llm_bench -t：8
 ```
 
-### 六、运行 MNN CPU / KleidiAI 推理
+### 3.1.2.6 运行 MNN CPU / KleidiAI 推理
 
 设置当前构建目录的动态库路径：
 
@@ -1295,18 +1222,13 @@ MNN_KLEIDIAI_DEFAULT_ON=ON
 但不能仅凭模型能够输出文本判断 KleidiAI 已经生效。正式测试时，应结合：
 
 - MNN Commit；
-
 - CMake 配置；
-
 - 运行日志；
-
 - CPU 指令能力；
-
 - 线程数和绑核范围；
-
 - 相同模型下的性能数据。
 
-### 七、MNN CPU 性能测试
+### 3.1.2.7 MNN CPU 性能测试
 
 先查看当前版本参数：
 
@@ -1350,7 +1272,7 @@ taskset -c "$CPU_LIST" \
 
 正式测试时，config-cpu.json 中的 thread_num、llm_bench -t 和 taskset 绑定的 CPU 数量应保持一致。
 
-### 八、可选：编译 MNN OpenCL 版本
+### 3.1.2.8 可选：编译 MNN OpenCL 版本
 
 MNN OpenCL 后端依赖 CIX GO 图形引擎提供的 GPU 驱动和 OpenCL Runtime。
 
@@ -1455,7 +1377,7 @@ ldd "$LLM_DEMO_OPENCL" \
 | grep -E "libMNN|libllm|OpenCL|not found"
 ```
 
-### 九、创建 OpenCL 配置
+### 3.1.2.9 创建 OpenCL 配置
 
 复制原始模型配置：
 
@@ -1501,18 +1423,14 @@ grep -nE \
 
 在 MNN OpenCL LLM 测试中，thread_num=4 或 llm_bench -t 4 不应简单理解为使用四个 CPU 线程。对于 OpenCL 后端，该参数与 GPU Mode 有关，当前社区版本通常推荐使用 4，但应以当前版本文档和 llm_bench --help 为准。
 
-### 十、运行 MNN OpenCL 推理
+### 3.1.2.10 运行 MNN OpenCL 推理
 
 OpenCL 推理的主要计算由 GPU 承担，但 CPU 仍可能负责：
 
 - Tokenizer；
-
 - 模型调度；
-
 - 内存管理；
-
 - 数据搬运；
-
 - 部分 OpenCL 不支持的算子。
 
 OpenCL 推理默认将宿主进程绑定至当前最高频的 4 个 Cortex-A720 核心：
@@ -1551,17 +1469,11 @@ grep -Ei \
 满足以下条件，可以认为 MNN OpenCL 推理路径基本跑通：
 
 1.  clinfo 能够识别 OpenCL Platform 和 GPU Device；
-
 2.  构建配置中显示 MNN_OPENCL=ON；
-
 3.  使用的是 build-opencl 中编译的程序；
-
 4.  config-opencl.json 中设置了 backend_type=opencl；
-
 5.  运行日志显示 OpenCL 后端或 GPU Device 已初始化；
-
 6.  未出现 OpenCL 初始化失败或完全回退至 CPU；
-
 7.  模型能够正常生成文本。
 
 OpenCL 推理过程中，日志中出现 CPU 信息不一定表示 OpenCL 失败。重点应确认是否出现 OpenCL 初始化失败，或者整个模型完全回退至 CPU。
@@ -1594,7 +1506,7 @@ taskset -c 0,1,10,11
 
 OpenCL 首次运行时可能执行 Kernel Tuning 并生成缓存，因此首次运行结果通常不适合作为正式性能数据。建议先运行一次预热，再执行正式测试。
 
-### 十一、CPU 与 OpenCL 性能对比
+### 3.1.2.11 CPU 与 OpenCL 性能对比
 
 MNN CPU / KleidiAI 测试使用全部 8 个 Cortex-A720 核心：
 
@@ -1656,23 +1568,14 @@ taskset -c "$GPU_CPU_LIST" \
 正式对比时，应固定：
 
 - 模型及量化配置；
-
 - Prompt 长度；
-
 - 生成长度；
-
 - 测试重复次数；
-
 - MNN Commit；
-
 - 系统镜像；
-
 - GPU Runtime；
-
 - 系统电源状态；
-
 - 系统温度和散热状态；
-
 - 后台进程负载。
 
 CPU 和 OpenCL 使用不同的 CPU 绑定配置：
@@ -1685,7 +1588,6 @@ CPU 和 OpenCL 使用不同的 CPU 绑定配置：
 CPU 测试中的 -t 表示 CPU 推理线程数，应与以下两项保持一致：
 
 - config-cpu.json 中的 thread_num；
-
 - taskset 绑定的 CPU 数量。
 
 即默认 CPU 配置为：
@@ -1744,12 +1646,11 @@ GPU_CPU_LIST=0,1,10,11
 正式发布的默认测试配置仍建议使用：
 
 - MNN CPU / KleidiAI：全部 8 个 Cortex-A720；
-
 - MNN OpenCL：4 个最高频 Cortex-A720。
 
 测试结果用于比较当前设备和当前环境下不同后端的相对性能，不应直接作为不同开发板、不同模型或不同软件版本之间的统一性能基准。
 
-### 十二、MNN 常见问题
+### 3.1.2.12 MNN 常见问题
 
 | **问题现象**                    | **可能原因**                     | **处理建议**                   |
 |---------------------------------|----------------------------------|--------------------------------|

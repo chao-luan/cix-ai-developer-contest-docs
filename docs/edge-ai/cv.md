@@ -29,31 +29,13 @@ CIX AI Model Hub 中的完整视觉模型示例通常包括原始模型、量化
 
 完整部署流程分为宿主机编译和设备端推理两个阶段。
 
-获取 AI Model Hub
-
-↓
-
-选择 ComputeVision 模型目录
-
-↓
-
-检查原始模型、CFG、校准数据和测试数据
-
-↓
-
-【可选】在 x86_64 宿主机使用 cixbuild 生成 .cix
-
-↓
-
-将完整模型示例目录部署到 CIX P1
-
-↓
-
-在设备端运行 inference_npu.py
-
-↓
-
-检查模型输出并接入实际图片、视频或摄像头
+1. 获取 AI Model Hub
+2. 选择 ComputeVision 模型目录
+3. 检查原始模型、CFG、校准数据和测试数据
+4. 【可选】在 x86_64 宿主机使用 cixbuild 生成 .cix
+5. 将完整模型示例目录部署到 CIX P1
+6. 在设备端运行 inference_npu.py
+7. 检查模型输出并接入实际图片、视频或摄像头
 
 如果模型目录已经提供与当前 Release 匹配的 .cix 文件，可以跳过编译，直接进行设备端推理。
 
@@ -61,7 +43,7 @@ NOE 编译器运行在 Ubuntu 20.04 或 Ubuntu 22.04 的 x86_64 主机环境中�
 
 ## 3.2.3 运行前检查
 
-### 一、检查设备端 NOE 环境
+### 3.2.3.1 检查设备端 NOE 环境
 
 在 CIX P1 开发板执行：
 
@@ -79,7 +61,7 @@ python3 -m pip list | grep -E "libnoe|noe_engine"
 
 如果设备端软件包未安装，应先按照第 2.3.2 节完成 NPU Driver、NPU UMD、NOE Runtime 和 cix-ai-engine 安装，不建议混用不同 Release 的驱动、Runtime 和 .cix 文件。
 
-### 二、检查 AI Model Hub
+### 3.2.3.2 检查 AI Model Hub
 
 ```bash
 cd "$AI_MODEL_HUB_DIR”
@@ -103,7 +85,7 @@ Semantic_Segmentation
 Super_Resolution
 ```
 
-### 三、安装环境与依赖
+### 3.2.3.3 安装环境与依赖
 
 进入 AI Model Hub 根目录后，应先阅读根目录中的 ReadMe.md 或
 
@@ -266,23 +248,11 @@ tiling=fps
 
 不同视觉模型通常均包含：
 
-图片或视频帧
-
-↓
-
-输入预处理
-
-↓
-
-NPU 推理
-
-↓
-
-输出后处理
-
-↓
-
-分类、检测、分割或可视化结果
+1. 图片或视频帧
+2. 输入预处理
+3. NPU 推理
+4. 输出后处理
+5. 分类、检测、分割或可视化结果
 
 替换自定义输入前，应重点确认：
 
@@ -324,34 +294,17 @@ Face_Recognition/onnx_scrfd_arcface/datasets/in_video.mp4
 
 接入摄像头或视频时，推荐采用以下处理流程：
 
-摄像头或视频文件
-
-↓
-
-V4L2 / GStreamer / FFmpeg / VPU 解码
-
-↓
-
-获取图像帧
-
-↓
-
-图像预处理
-
-↓
-
-NOE Engine NPU 推理
-
-↓
-
-结果叠加、显示或 Agent 工具调用
+1. 摄像头或视频文件
+2. V4L2 / GStreamer / FFmpeg / VPU 解码
+3. 获取图像帧
+4. 图像预处理
+5. NOE Engine NPU 推理
+6. 结果叠加、显示或 Agent 工具调用
 
 开发时应依次跑通以下环节：
 
 1.  单张图片 NPU 推理；
-
 2.  摄像头取流或视频解码；
-
 3.  将取流、解码与 NPU 推理串接为实时 Pipeline。
 
 当前 AI Model Hub 还提供多种预构建应用 Demo，例如：

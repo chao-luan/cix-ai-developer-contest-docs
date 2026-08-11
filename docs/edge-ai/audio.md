@@ -4,7 +4,7 @@
 
 ## 3.3.1 当前 Audio 模型
 
-### 一、说话人验证
+### 3.3.1.1 说话人验证
 
 | **模型目录**                         | **主要文件**                                   |
 |--------------------------------------|------------------------------------------------|
@@ -13,7 +13,7 @@
 
 说话人验证模型用于提取语音中的说话人特征，并计算两段语音是否来自同一说话人。
 
-### 二、语音识别
+### 3.3.1.2 语音识别
 
 | **模型目录**                                         | **说明**                  |
 |------------------------------------------------------|---------------------------|
@@ -25,14 +25,12 @@
 其中：
 
 - Whisper Tiny 和 Small 目录主要提供 Encoder .cix；
-
 - Whisper Medium 目录同时提供 Encoder 和 Decoder .cix；
-
 - SenseVoice 目录提供 sense_voice_mask256.cix。
 
 不同模型的 NPU 加速范围并不完全相同，应根据模型目录中的实际 .cix 文件判断哪些子模型运行在 NPU 上。
 
-### 三、语音合成
+### 3.3.1.3 语音合成
 
 当前 TTS 目录提供：
 
@@ -59,69 +57,30 @@ inference_onnx.py
 
 不同 Audio 任务的流程如下。
 
-### 一、说话人验证
+### 3.3.2.1 说话人验证
 
-两段音频
+1. 两段音频
+2. 重采样和声学特征提取
+3. NPU 提取说话人向量
+4. 计算向量相似度
+5. 判断是否为同一说话人
 
-↓
+### 3.3.2.2 语音识别
 
-重采样和声学特征提取
+1. 音频
+2. 重采样、分帧和声学特征提取
+3. NPU Encoder 或完整声学模型推理
+4. Decoder 和 Tokenizer
+5. 识别文本
 
-↓
+### 3.3.2.3 TTS
 
-NPU 提取说话人向量
-
-↓
-
-计算向量相似度
-
-↓
-
-判断是否为同一说话人
-
-### 二、语音识别
-
-音频
-
-↓
-
-重采样、分帧和声学特征提取
-
-↓
-
-NPU Encoder 或完整声学模型推理
-
-↓
-
-Decoder 和 Tokenizer
-
-↓
-
-识别文本
-
-### 三、TTS
-
-输入文本
-
-↓
-
-Tokenizer / BERT
-
-↓
-
-Text Encoder
-
-↓
-
-时长或特征预测
-
-↓
-
-Decoder
-
-↓
-
-生成音频波形
+1. 输入文本
+2. Tokenizer / BERT
+3. Text Encoder
+4. 时长或特征预测
+5. Decoder
+6. 生成音频波形
 
 Audio 示例中的音频读取、特征提取、Tokenizer 和部分 Decoder 可能仍在 CPU 或其他 Runtime 上运行。因此，端到端耗时不等于单个 .cix 的 NPU 推理时间。
 
@@ -160,17 +119,11 @@ sudo apt install -y ffmpeg
 不同模型可能依赖：
 
 - NumPy；
-
 - PyTorch；
-
 - Transformers；
-
 - SentencePiece；
-
 - FunASR；
-
 - 音频读取库；
-
 - MNN Runtime。
 
 具体依赖应以模型 ReadMe.md 和脚本导入内容为准。
@@ -204,23 +157,16 @@ python3 inference_npu.py
 正常运行时，脚本应完成：
 
 1.  读取测试列表；
-
 2.  加载两段语音；
-
 3.  执行特征提取；
-
 4.  使用 NPU 生成说话人向量；
-
 5.  输出相似度或验证结果。
 
 替换自定义语音前，应确认：
 
 - 采样率符合模型要求；
-
 - 音频为有效 WAV；
-
 - 音频长度满足模型输入要求；
-
 - 测试列表格式与原示例一致。
 
 ERes2NetV2 示例使用方式相同，但模型文件名和 CFG 不同：
@@ -232,7 +178,7 @@ python3 inference_npu.py
 
 ## 3.3.5 运行语音识别示例
 
-### 一、SenseVoice
+### 3.3.5.1 SenseVoice
 
 ```bash
 cd "$AI_MODEL_HUB_DIR/models/Audio/Speech_Recognition/onnx_sensevoice”
@@ -254,7 +200,7 @@ ls -lh test_data
 python3 inference_npu.py
 ```
 
-### 二、Whisper Tiny
+### 3.3.5.2 Whisper Tiny
 
 ```bash
 cd "$AI_MODEL_HUB_DIR/models/Audio/Speech_Recognition/onnx_whisper_tiny_multi_language”
@@ -285,7 +231,7 @@ test_data/
 
 因此不要只复制 whisper_tiny_encoder.cix。完整推理还依赖模型配置、Tokenizer、音频预处理和解码代码。
 
-### 三、Whisper Medium
+### 3.3.5.3 Whisper Medium
 
 Whisper Medium 与 Tiny 不同，其目录中同时包含：
 
@@ -388,7 +334,7 @@ NOE 编译器公开的 model_domain 列表中没有 tts。Kokoro 应使用目录
 
 ## 3.3.7 替换自定义音频或文本
 
-### 一、自定义音频
+### 3.3.7.1 自定义音频
 
 先使用 FFmpeg 查看音频信息：
 
@@ -420,20 +366,15 @@ output_16k_mono.wav
 | Tokenizer  | 必须与模型版本匹配             |
 | 测试列表   | 说话人验证可能要求特定列表格式 |
 
-### 二、自定义 TTS 文本
+### 3.3.7.2 自定义 TTS 文本
 
 替换 TTS 文本时，应确认：
 
 - 当前模型支持的语言；
-
 - 使用的 Voice 文件；
-
 - 文本编码和标点格式；
-
 - 输出采样率；
-
 - 输出文件路径；
-
 - 中英文 Voice 与文本语言是否匹配。
 
 不要直接删除 voices、kokoro 或 decoder1_int8.mnn，这些都是完整 TTS Pipeline 的组成部分。
@@ -444,48 +385,22 @@ output_16k_mono.wav
 
 推荐流程：
 
-麦克风
-
-↓
-
-录音或音频分段
-
-↓
-
-格式转换和特征提取
-
-↓
-
-语音识别
-
-↓
-
-文本输入 LLM / Agent
-
-↓
-
-工具调用
-
-↓
-
-TTS 生成回复
-
-↓
-
-扬声器播放
+1. 麦克风
+2. 录音或音频分段
+3. 格式转换和特征提取
+4. 语音识别
+5. 文本输入 LLM / Agent
+6. 工具调用
+7. TTS 生成回复
+8. 扬声器播放
 
 建议按以下顺序开发：
 
 1.  使用模型自带测试音频跑通；
-
 2.  使用自定义音频文件验证；
-
 3.  单独验证麦克风录音；
-
 4.  将录音文件送入识别脚本；
-
 5.  接入 LLM 或 Agent；
-
 6.  最后接入 Kokoro TTS 和扬声器。
 
 当前 AI Model Hub 还提供：
@@ -509,17 +424,11 @@ Audio 应分阶段记录耗时：
 正式比较时，应固定：
 
 - 输入音频或文本；
-
 - 音频长度；
-
 - 模型版本；
-
 - .cix 和 Runtime 版本；
-
 - Decoder 参数；
-
 - Voice 文件；
-
 - 系统负载和温度。
 
 ## 3.3.10 常见问题

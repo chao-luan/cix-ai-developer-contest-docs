@@ -78,13 +78,9 @@ python3 anyint_chat.py
 如果程序能够正常返回文本，说明以下基础链路已经跑通：
 
 1.  开发板可以访问 AnyInt；
-
 2.  API Key 有效；
-
 3.  模型 ID 正确；
-
 4.  OpenAI SDK 配置正确；
-
 5.  Chat Completions 接口可以正常返回结果。
 
 AnyInt 的 OpenAI 兼容接口支持通过标准 OpenAI SDK 调用，普通文本聊天应优先使用 chat.completions.create()，而不是 Responses API。
@@ -101,26 +97,11 @@ AnyInt 的 OpenAI 兼容接口支持通过标准 OpenAI SDK 调用，普通文�
 
 典型调用链路如下：
 
-用户输入
-
-↓
-
-此芯 P1 上的 Agent 应用
-
-↓
-
-任务规划、记忆、RAG 或工具调用
-
-↓
-
-AnyInt OpenAI 兼容接口
-
-↓
-
-云端大模型
-
-↓
-
-结果返回 Agent
+1. 用户输入
+2. 此芯 P1 上的 Agent 应用
+3. 任务规划、记忆、RAG 或工具调用
+4. AnyInt OpenAI 兼容接口
+5. 云端大模型
+6. 结果返回 Agent
 
 不同 Agent 框架的参数名称可能不同，但应确保最终请求使用正确的 Base URL、API Key 和模型 ID。建议先运行 anyint_chat.py，确认基础 API 正常后，再接入完整 Agent Workflow。

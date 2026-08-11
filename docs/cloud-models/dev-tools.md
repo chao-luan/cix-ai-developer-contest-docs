@@ -44,11 +44,8 @@ claude
 注意：
 
 1.  ANTHROPIC_AUTH_TOKEN 只填写 API Key，不要添加 Bearer ；
-
 2.  模型 ID 应来自 /anthropic/v1/models；
-
 3.  当前终端关闭后，临时环境变量会失效；
-
 4.  不要把包含 API Key 的配置文件提交到代码仓库。
 
 Claude Code 官方支持通过 ANTHROPIC_BASE_URL 接入 LLM Gateway，用户级配置文件通常位于 ~/.claude/settings.json。本指南优先使用临时环境变量，避免将 API Key 直接写入文件。
@@ -111,11 +108,8 @@ https://api.anyint.ai/openai/v1
 由于 Responses API 当前仍为 Beta，出现以下情况时，应先验证客户端、模型和接口组合，而不能直接判断为本地配置错误：
 
 - 模型在 Models API 中可见，但 Responses 请求不可用；
-
 - 请求开始后流式响应无法完成；
-
 - Codex 无法获取或识别模型信息；
-
 - 返回临时上游路由或额度异常。
 
 应先使用第 5.3 节的 Chat Completions 示例验证 API Key 和模型，再更换模型或联系 AnyInt 技术支持。

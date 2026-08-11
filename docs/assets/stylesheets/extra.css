@@ -1,0 +1,61 @@
+:root {
+  --md-text-font: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --md-code-font: "JetBrains Mono", "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+}
+
+.md-grid {
+  max-width: 92rem;
+}
+
+.md-typeset {
+  font-size: 0.82rem;
+  line-height: 1.78;
+}
+
+.md-typeset h1 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.md-typeset h2 {
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  padding-bottom: 0.35rem;
+}
+
+.md-typeset table:not([class]) {
+  display: table;
+  width: 100%;
+  font-size: 0.72rem;
+}
+
+.md-typeset table:not([class]) th {
+  background: color-mix(in srgb, var(--md-primary-fg-color) 10%, transparent);
+  font-weight: 650;
+}
+
+.md-typeset code {
+  overflow-wrap: normal;
+}
+
+.md-typeset pre > code {
+  white-space: pre;
+}
+
+.md-typeset blockquote {
+  border-left-color: var(--md-accent-fg-color);
+  background: color-mix(in srgb, var(--md-accent-fg-color) 6%, transparent);
+  padding-top: 0.55rem;
+  padding-bottom: 0.55rem;
+}
+
+.md-typeset img {
+  display: block;
+  max-width: min(100%, 52rem);
+  margin: 1.25rem auto;
+}
+
+@media (max-width: 767px) {
+  .md-typeset {
+    font-size: 0.78rem;
+  }
+}
