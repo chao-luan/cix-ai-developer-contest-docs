@@ -42,8 +42,8 @@
 </tr>
 <tr class="odd">
 <td>天数TY1100-NX</td>
-<td><p>此芯P1/16GB LPDDR/512GB SSD</p>
-<p>天数GPGPU,100TOPS,32GB</p></td>
+<td>此芯P1/16GB LPDDR/512GB SSD<br>
+天数GPGPU,100TOPS,32GB</td>
 <td>默认集成</td>
 </tr>
 </tbody>
