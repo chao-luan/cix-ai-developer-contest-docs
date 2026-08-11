@@ -71,11 +71,11 @@ dpkg -l | grep -E "cix-gpu|cix-mesa|cix-libglvnd|xwayland"
 
 ### 2.3.1.4 安装与更新
 
-#### 2.3.1.4.1 获取并解压安装包
+#### 1. 获取并解压安装包
 
-通过浏览器登录此芯开发者中心[CIX Technology](https://developer.cixtech.com/)，下载与赛事 Release 匹配的 GO 图形引擎安装包并解压。进入解压目录后执行 ls，确认其中包含 README.md、ReleaseNotes.md、install.sh、uninstall.sh 及相关 .deb 软件包。
+通过浏览器登录[此芯开发者中心](https://developer.cixtech.com/)，下载与赛事 Release 匹配的 GO 图形引擎安装包并解压。进入解压目录后执行 ls，确认其中包含 README.md、ReleaseNotes.md、install.sh、uninstall.sh 及相关 .deb 软件包。
 
-#### 2.3.1.4.2 全新安装
+#### 2. 全新安装
 
 如果当前系统未安装其他版本的 GO 图形引擎，按照安装包 README 执行：
 
@@ -84,7 +84,7 @@ sudo ./install.sh
 sudo reboot
 ```
 
-#### 2.3.1.4.3 更新已安装版本
+#### 3. 更新已安装版本
 
 如果系统已经安装其他版本的 GO 图形引擎，应先卸载旧版本，再安装当前版本：
 
@@ -96,7 +96,7 @@ sudo reboot
 
 不建议直接覆盖安装不同 Release 的软件包。
 
-#### 2.3.1.4.4 可选：DKMS 模式安装
+#### 4. 可选：DKMS 模式安装
 
 DKMS 模式用于根据当前 Linux 内核重新编译 GPU 内核驱动，主要适用于以下场景：
 
@@ -120,7 +120,7 @@ sudo reboot
 
 安装或更新完成并重启后，应验证 GPU 驱动、设备节点和图形应用是否能够正常工作。
 
-#### 2.3.1.5.1 再次检查软件包
+#### 1. 再次检查软件包
 
 执行：
 
@@ -130,7 +130,7 @@ dpkg -l | grep -E "cix-gpu|cix-mesa|cix-libglvnd|xwayland"
 
 确认 cix-gpu-dkms、cix-gpu-umd、cix-libglvnd 和 cix-mesa 等相关软件包已经安装，并且版本与当前 GO 图形引擎安装包一致。
 
-#### 2.3.1.5.2 检查 GPU 设备节点
+#### 2. 检查 GPU 设备节点
 
 执行：
 
@@ -140,7 +140,7 @@ ls /dev/dri
 
 正常情况下应能看到 card\* 和 renderD\* 节点。
 
-#### 2.3.1.5.3 安装图形测试工具
+#### 3. 安装图形测试工具
 
 执行：
 
@@ -151,7 +151,7 @@ sudo apt install -y glmark2-x11
 
 如果当前赛事镜像已经预装该工具，则无需重复安装。
 
-#### 2.3.1.5.4 运行图形测试
+#### 4. 运行图形测试
 
 进入桌面环境后执行：
 
@@ -219,9 +219,7 @@ NOE AI SDK 分为宿主机和设备端两部分：
 
 ### 2.3.2.1 获取 NOE AI SDK
 
-NOE AI SDK 可通过此芯开发者中心或赛事资源包获取：
-
-<https://developer.cixtech.com/>
+NOE AI SDK 可通过 [此芯开发者中心](https://developer.cixtech.com) 获取。
 
 请使用与赛事指定 Release 和系统镜像匹配的软件包。本次赛事以 2026Q2 Release 为软件基线。
 
@@ -236,7 +234,7 @@ NOE AI SDK 可通过此芯开发者中心或赛事资源包获取：
 | cix-ai-engine       | NOE Python 推理引擎，对 NOE Python API 进行高层封装             |
 | cix-ai-test         | NPU 测试工具，用于基础功能和稳定性验证                          |
 
-实际文件名可能包含操作系统标识、构建日期等后缀，应以当前赛事安装包中的文件为准。26Q2 Release 同时交付了 cix-llama-cpp 和 cix-mnn，其用途和安装方法见第 3 章，不在本节展开。
+实际文件名可能包含操作系统标识、构建日期等后缀，应以当前赛事安装包中的文件为准。
 
 ```{warning}
 linux_x86_64.whl 用于 x86_64 Linux 宿主机；\_arm64.deb 用于 CIX P1 设备端，不要将 ARM64 软件包安装到 x86_64 宿主机，不要跨 Release 混装 NPU Driver、NPU UMD、NOE Runtime、NOE Engine 和系统镜像。
@@ -410,11 +408,9 @@ python3 -m pip list | grep -E "libnoe|noe_engine"
 
 CIX AI ModelHub 提供已经完成量化编译和环境验证的模型、配置文件、测试数据和推理示例。建议使用其中已经包含 .cix 文件的模型验证设备端 NPU 推理链路，无需在本节重新编译模型。
 
-CIX AI ModelHub 地址：
+[点击此处获取CIX AI ModelHub](https://modelscope.cn/models/cix/ai_model_hub_26_Q2)
 
-[ai_model_hub_26_Q2 · 模型库](https://modelscope.cn/models/cix/ai_model_hub_26_Q2)
-
-ModelHub 中的推理脚本依赖既定的目录结构，并可能引用根目录中的 utils 模块、配置文件及测试数据。因此，**下载后必须保留完整的 AI ModelHub 目录结构，不要仅复制单个模型目录、推理脚本或 .cix 文件到其他位置运行**。
+ModelHub 中的推理脚本依赖既定的目录结构，并可能引用根目录中的 utils 模块、配置文件及测试数据。因此，下载后必须保留完整的 AI ModelHub 目录结构，不要仅复制单个模型目录、推理脚本或 .cix 文件到其他位置运行。
 
 下文使用 AI_MODEL_HUB_DIR 表示下载到本地的 AI Model Hub 根目录。假设 AI Model Hub 位于当前用户主目录下的 ai_model_hub 目录，执行：
 
@@ -546,6 +542,8 @@ CIX P1 Debian 12 多媒体环境主要包括以下组件：
 
 更新时应使用赛事提供的 Multimedia SDK 安装包，并按照对应 Release Notes 执行。不同 Release 的具体软件包名称和安装方式可能不同，本章节不提供统一的覆盖安装命令。
 
+此芯多媒体 SDK 安装包可通过 [此芯开发者中心](https://developer.cixtech.com) 获取。
+
 ```{warning}
 不建议通过系统软件源自行升级或覆盖 GStreamer、FFmpeg、V4L2 插件及相关多媒体组件，以免用户态组件、VPU 驱动和系统镜像版本不匹配。
 ```
@@ -629,7 +627,7 @@ ls -lh \ big_buck_bunny_1080p_h264.mov
 
 ### 2.3.3.4 GStreamer 基础验证
 
-#### 2.3.3.4.1 视频播放验证
+#### 1. 视频播放验证
 
 执行：
 
@@ -640,7 +638,7 @@ uri=file://$HOME/multimedia-test/big_buck_bunny_1080p_h264.mov
 
 如果桌面和显示环境正常，应能打开播放窗口并正常播放视频。该步骤仅用于验证视频播放、音视频同步和显示链路，不作为 VPU 硬件解码是否启用的判断依据。
 
-#### 2.3.3.4.2 VPU 硬件解码验证
+#### 2. VPU 硬件解码验证
 
 执行：
 
@@ -655,7 +653,7 @@ fakesink sync=true
 
 该 Pipeline 显式使用 v4l2h264dec，不会显示画面，而是调用 CIX P1 VPU 完成 H.264 硬件解码。Pipeline 能够正常运行，说明 GStreamer 已找到并调用 V4L2 M2M 硬件解码插件。
 
-#### 2.3.3.4.3 确认 VPU 硬件加速已启用
+#### 3. 确认 VPU 硬件加速已启用
 
 在运行硬件解码 Pipeline 前，另开一个终端，执行：
 
@@ -700,7 +698,7 @@ VPU 使用率是确认硬件解码是否实际运行的直接依据，CPU 占用
 
 FFmpeg 显式使用 h264_v4l2m2m，且运行期间出现持续的 VPU 驱动日志，可以确认硬件解码生效。
 
-#### 2.3.3.4.4 可选：摄像头预览验证
+#### 4. 可选：摄像头预览验证
 
 如果应用需要使用摄像头，先检查视频设备节点：
 
