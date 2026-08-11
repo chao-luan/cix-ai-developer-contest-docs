@@ -87,13 +87,9 @@ lspci 无法识别设备属于硬件链路问题，不能通过反复安装驱�
 
 ### 4.2.1.2 下载驱动安装包
 
-后摩开发者社区：
+后摩开发者社区：[点击此处跳转](https://developer.houmoai.com/) 
 
-[点击此处跳转](https://developer.houmoai.com/) 
-
-后摩资源中心：
-
-[点击此处跳转](https://developer.houmoai.com/resources_v2) 
+后摩资源中心：[点击此处跳转](https://developer.houmoai.com/resources_v2) 
 
 在资源中心下载驱动时，应确认以下条件：
 
