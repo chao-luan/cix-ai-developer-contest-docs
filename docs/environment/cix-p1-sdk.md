@@ -36,7 +36,7 @@ GO 图形引擎通常会根据应用使用的图形接口和窗口系统自动�
 
 ### 2.3.1.2 安装包获取
 
-GO 图形引擎安装包可通过[此芯开发者中心]([https://developer.cixtech.com]获取。
+GO 图形引擎安装包可通过 [此芯开发者中心](https://developer.cixtech.com) 获取。
 
 请使用与赛事指定 Release 匹配的安装包。本次赛事统一使用 2026Q2 Release，不建议跨 Release 混装 GPU Kernel Driver、GPU 用户态驱动、Mesa、libglvnd 和 XWayland 等组件。
 
