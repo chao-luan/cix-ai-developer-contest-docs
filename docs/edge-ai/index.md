@@ -21,14 +21,14 @@
 <tr class="odd">
 <td rowspan="2">LLM</td>
 <td>llama.cpp</td>
-<td><p>CPU – KleidiAI</p>
-<p>GPU – Vulkan</p></td>
+<td>CPU – KleidiAI<br>
+GPU – Vulkan</td>
 <td rowspan="2">支持Qwen, MiniCPM, Ernie等大语言模型</td>
 </tr>
 <tr class="even">
 <td>MNN</td>
-<td><p>CPU – KleidiAI</p>
-<p>GPU – OpenCL</p></td>
+<td>CPU – KleidiAI<br>
+GPU – OpenCL</td>
 </tr>
 <tr class="odd">
 <td>CV</td>
