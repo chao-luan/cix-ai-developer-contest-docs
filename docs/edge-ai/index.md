@@ -59,6 +59,7 @@ GPU – OpenCL</td>
 
 此芯AI Model Hub提供适配优化好的主流模型下载，开发者可以直接部署使用。
 
+[点击此处获取CIX AI ModelHub](https://modelscope.cn/models/cix/ai_model_hub_26_Q2)
 
 ```{toctree}
 :maxdepth: 2
