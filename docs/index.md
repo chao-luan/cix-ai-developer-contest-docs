@@ -11,10 +11,6 @@
 | [5. 云端大模型接入](cloud-models/index.md) | AnyInt API、应用接入和开发辅助工具 |
 | [6. 参考资料](references.md) | 开发者中心、官方文档与硬件资料 |
 
-```{note}
-当前内容由 Word 版 v0.8.5 转换，并按在线技术文档结构统一排版。
-```
-
 ```{toctree}
 :maxdepth: 3
 :hidden:
