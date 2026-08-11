@@ -139,17 +139,30 @@ body {
   font-size: 0.88em;
 }
 
-.rst-content div[class^="highlight"] pre {
-  background: var(--cix-code-bg);
+.rst-content div[class^="highlight-"].notranslate {
+  margin: 0.9rem 0 1.35rem;
+  overflow: hidden;
   border: 1px solid var(--cix-border);
-  border-radius: 6px;
-  line-height: 1.55;
-  overflow-x: auto;
+  border-radius: 4px;
+  background: var(--cix-code-bg);
   box-shadow: none;
 }
 
-.rst-content div[class^="highlight"] {
-  margin: 0.9rem 0 1.35rem;
+.rst-content div[class^="highlight-"].notranslate > .highlight {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.rst-content div[class^="highlight-"].notranslate pre {
+  margin: 0;
+  overflow-x: auto;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  line-height: 1.55;
 }
 
 .rst-content .copybtn {

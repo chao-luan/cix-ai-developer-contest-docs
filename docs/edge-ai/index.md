@@ -63,8 +63,6 @@
 ai_model_hub_26_Q2 · 模型库
 ```
 
-## 章节导航
-
 ```{toctree}
 :maxdepth: 2
 :hidden:

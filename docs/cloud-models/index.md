@@ -11,8 +11,6 @@
 
 普通应用优先使用 OpenAI Chat Completions 兼容接口（Stable）。Claude Code 使用 Anthropic 兼容接口（Stable）；Codex CLI 需要使用 OpenAI Responses API（Beta）。
 
-## 章节导航
-
 ```{toctree}
 :maxdepth: 2
 :hidden:
