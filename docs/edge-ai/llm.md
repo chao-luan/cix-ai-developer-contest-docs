@@ -203,7 +203,7 @@ cd ~/models/qwen2.5-0.5b
 
 模型页面：
 
-https://modelscope.cn/models/Qwen/Qwen2.5-0.5B-Instruct-GGUF
+[点击此处跳转](https://modelscope.cn/models/Qwen/Qwen2.5-0.5B-Instruct-GGUF)
 
 下载 Q4_K_M 模型：
 
@@ -846,10 +846,8 @@ cd ~/mnn
 获取 MNN 社区源码：
 
 ```bash
-git clone \
+git clone https://github.com/alibaba/MNN.git
 ```
-
-https://github.com/alibaba/MNN.git
 
 进入源码目录：
 
@@ -1007,10 +1005,8 @@ ldd "$LLM_DEMO" \
 ```bash
 mkdir -p ~/mnn
 cd ~/mnn
-git clone \
+git clone https://www.modelscope.cn/MNN/Qwen2.5-0.5B-Instruct-MNN.git
 ```
-
-https://www.modelscope.cn/MNN/Qwen2.5-0.5B-Instruct-MNN.git
 
 进入模型目录并下载完整权重：
 
