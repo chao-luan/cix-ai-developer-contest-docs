@@ -57,11 +57,8 @@ GPU – OpenCL</td>
 </tbody>
 </table>
 
-此芯AI Model Hub提供适配优化好的主流模型下载，开发者可以直接部署使用，链接如下：
+此芯AI Model Hub提供适配优化好的主流模型下载，开发者可以直接部署使用。
 
-```text
-ai_model_hub_26_Q2 · 模型库
-```
 
 ```{toctree}
 :maxdepth: 2
