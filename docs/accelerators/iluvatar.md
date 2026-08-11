@@ -876,10 +876,10 @@ vllm bench serve --help
 
 天数智芯开发者社区：
 
-https://developer.iluvatar.com/
+[点击此处跳转](https://developer.iluvatar.com/)
 
 天数智芯官方文档中心：
 
-https://developer.iluvatar.com/docs
+[点击此处跳转](https://developer.iluvatar.com/docs)
 
 完整的 CoreX、ixsmi、vLLM、模型迁移和性能分析方法，应以赛事提供的推理镜像 README、天数智芯官方文档和赛事技术支持说明为准。
