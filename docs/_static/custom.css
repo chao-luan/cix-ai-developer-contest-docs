@@ -1,0 +1,72 @@
+:root {
+  --cix-accent: #315efb;
+  --cix-border: #e6eaf2;
+  --cix-code-bg: #f6f8fb;
+}
+
+body {
+  font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  line-height: 1.75;
+}
+
+.wy-nav-content {
+  max-width: 1280px;
+}
+
+.rst-content h1,
+.rst-content h2,
+.rst-content h3,
+.rst-content h4 {
+  font-family: inherit;
+  font-weight: 650;
+}
+
+.rst-content h2 {
+  border-bottom: 1px solid var(--cix-border);
+  padding-bottom: 0.35rem;
+}
+
+.rst-content table.docutils,
+.rst-content table.docutils.align-default {
+  width: 100%;
+  display: table;
+  font-size: 0.92em;
+}
+
+.rst-content table.docutils th {
+  background: #eef3ff;
+}
+
+.rst-content div[class^="highlight"] pre {
+  background: var(--cix-code-bg);
+  border: 1px solid var(--cix-border);
+  line-height: 1.55;
+  overflow-x: auto;
+}
+
+.rst-content blockquote {
+  margin-left: 0;
+  padding: 0.8rem 1rem;
+  border-left: 4px solid var(--cix-accent);
+  background: #f3f6ff;
+}
+
+.rst-content img {
+  display: block;
+  max-width: min(100%, 860px);
+  margin: 1.25rem auto;
+}
+
+.rst-content a {
+  overflow-wrap: anywhere;
+}
+
+@media screen and (max-width: 768px) {
+  .wy-nav-content-wrap {
+    margin-left: 0;
+  }
+
+  .wy-nav-content {
+    padding: 1.25rem;
+  }
+}

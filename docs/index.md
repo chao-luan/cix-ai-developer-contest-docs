@@ -1,39 +1,28 @@
-# CIX AI Developer Contest Documentation
+# 此芯 Agentic AI 创新应用大赛技术开发指南
 
-本项目用于沉淀开发者大赛相关文档，包括快速开始、本地大模型运行、NPU SDK、多媒体 SDK、外部加速卡 SDK、CDC 云端大模型接入、典型案例与问题排查。
+本指南面向基于此芯 P1 硬件平台参加 Agentic AI 创新应用大赛的开发者，覆盖基础环境部署、端侧 AI 推理、AI 加速卡算力扩展、云端大模型接入与参考资料。
 
-参赛者收到的设备默认已完成 BIOS 刷写和统一系统镜像预装。正常参赛流程下，建议优先阅读“快速开始”章节。BIOS 更新和系统重刷相关内容放在维护章节，仅用于异常恢复或工作人员制备设备。
+| 章节 | 主要内容 |
+| --- | --- |
+| [1. 概览](overview.md) | 大赛主题、硬件平台和算力资源 |
+| [2. 基础环境部署](environment/index.md) | BIOS、OS、GO 图形引擎、NOE AI SDK、多媒体 SDK |
+| [3. 此芯 P1 端侧 AI](edge-ai/index.md) | LLM、CV、Audio、VLM 的部署与验证 |
+| [4. AI 加速卡算力扩展](accelerators/index.md) | 天数智芯与后摩加速卡环境和推理流程 |
+| [5. 云端大模型接入](cloud-models/index.md) | AnyInt API、应用接入和开发辅助工具 |
+| [6. 参考资料](references.md) | 开发者中心、官方文档与硬件资料 |
 
-```{toctree}
-:maxdepth: 2
-:caption: 开始使用
-
-00-overview/index
-01-quick-start/index
+```{note}
+当前内容由 Word 版 v0.8.5 转换，并按在线技术文档结构统一排版。
 ```
 
 ```{toctree}
-:maxdepth: 2
-:caption: 模型运行与 SDK
+:maxdepth: 3
+:hidden:
 
-02-local-llm-vlm/index
-03-npu-sdk/index
-04-multimedia-sdk/index
-```
-
-```{toctree}
-:maxdepth: 2
-:caption: 外部加速与云端接入
-
-05-external-accelerators/index
-06-cdc-cloud-llm/index
-```
-
-```{toctree}
-:maxdepth: 2
-:caption: 示例与问题排查
-
-07-examples/index
-08-faq/index
-99-maintenance/index
+overview
+environment/index
+edge-ai/index
+accelerators/index
+cloud-models/index
+references
 ```
