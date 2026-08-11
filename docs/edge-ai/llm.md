@@ -88,10 +88,8 @@ cd ~/local-llm-test
 获取社区源码：
 
 ```bash
-git clone \
+git clone https://github.com/ggml-org/llama.cpp.git
 ```
-
-https://github.com/ggml-org/llama.cpp.git
 
 进入源码目录：
 
