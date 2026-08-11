@@ -31,7 +31,7 @@ html_theme_options = {
     "sticky_navigation": True,
     "navigation_depth": 4,
     "includehidden": True,
-    "titles_only": False,
+    "titles_only": True,
 }
 
 copybutton_prompt_text = r"^(?:\$ |>>> |\.\.\. )"
