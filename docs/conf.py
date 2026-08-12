@@ -1,4 +1,4 @@
-project = "此芯 Agentic AI 创新应用大赛技术开发指南"
+project = "2026此芯科技Agentic AI开发者大赛技术开发指南"
 author = "CIX"
 copyright = "2026, CIX"
 release = "0.8.5"
@@ -25,6 +25,11 @@ myst_heading_anchors = 4
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
+
+# 网页标题
+html_title = "2026此芯科技Agentic AI开发者大赛技术开发指南"
+html_short_title = "2026此芯科技Agentic AI开发者大赛技术开发指南"
+
 html_show_sourcelink = True
 html_theme_options = {
     "collapse_navigation": False,
