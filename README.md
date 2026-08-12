@@ -1,4 +1,4 @@
-# 此芯 Agentic AI 创新应用大赛技术开发指南
+# 2026 此芯科技 Agentic AI 开发者大赛技术开发指南
 
 本仓库是《此芯 Agentic AI 创新应用大赛技术开发指南》v0.8.5 的 Markdown / Read the Docs 版本，使用 Sphinx、MyST Parser 和 Read the Docs Theme 构建。
 
