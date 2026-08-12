@@ -1,7 +1,9 @@
 project = "2026此芯科技Agentic AI开发者大赛技术开发指南"
 author = "CIX"
 copyright = "2026, CIX"
-release = "0.8.5"
+
+# 不显示版本号
+release = ""
 
 extensions = [
     "myst_parser",
@@ -11,6 +13,7 @@ extensions = [
 source_suffix = {
     ".md": "markdown",
 }
+
 master_doc = "index"
 language = "zh_CN"
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
@@ -26,10 +29,12 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
 
-# 网页标题
-html_title = "2026此芯科技Agentic AI开发者大赛技术开发指南"
+# 关键：不要让 Sphinx 在页面标题后追加站点名/version/documentation
+html_title = ""
+html_short_title = ""
 
 html_show_sourcelink = True
+
 html_theme_options = {
     "collapse_navigation": False,
     "sticky_navigation": True,
