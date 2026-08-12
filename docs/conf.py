@@ -28,7 +28,6 @@ html_css_files = ["custom.css"]
 
 # 网页标题
 html_title = "2026此芯科技Agentic AI开发者大赛技术开发指南"
-html_short_title = "2026此芯科技Agentic AI开发者大赛技术开发指南"
 
 html_show_sourcelink = True
 html_theme_options = {
